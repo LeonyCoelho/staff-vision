@@ -1,0 +1,99 @@
+@import "https://www.nerdfonts.com/assets/css/webfont.css";
+body{
+    background-color: rgb(220, 227, 245);
+}
+
+.customNavbar{
+    margin-bottom: 1rem;
+    color: rgba(0, 0, 0, 0.9);
+    background-color: #fff !important;
+}
+
+.nav-link{
+    color: rgba(0, 0, 0, 0.9);
+}
+
+.custom-card{
+    margin-bottom: 1.5rem;
+    /* border-radius: 15px; */
+}
+
+.card-header{
+    text-transform: uppercase;
+}
+
+.list-group{
+    border-radius: 0px;
+}
+
+/* =================================== ITEMS =================================== */
+
+.form-control{
+    margin-bottom: 1rem;
+}
+
+.form-select{
+    margin-bottom: 1rem;
+}
+
+.form-button{
+    margin-bottom: 1rem;
+}
+
+
+.title{
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+}
+
+/* ================================= THEMING ================================ */
+
+.btn-primary{
+    /* background-color: blueviolet; */
+    border-color: rgba(0, 0, 0, 0.247);
+}
+
+/* =============================== SETTINGS ============================= */
+
+.theme-box{
+    height: 300px;
+}
+.logo-box{
+    height: 300px;
+}
+.establishment-settings-box{
+    overflow-x: hidden;
+    overflow-y: scroll;
+    height: 300px;
+}
+.sector-settings-box{
+    overflow-x: hidden;
+    overflow-y: scroll;
+    height: 300px;
+}
+.subSector-settings-box{
+    overflow-x: hidden;
+    overflow-y: scroll;
+    height: 300px;
+}
+.shift-settings-box{
+    overflow-x: hidden;
+    overflow-y: scroll;
+    height: 300px;
+}
+.position-settings-box{
+    overflow-x: hidden;
+    overflow-y: scroll;
+    height: 300px;
+}
+.status-settings-box{
+    overflow-x: hidden;
+    overflow-y: scroll;
+    height: 300px;
+}
+
+/* =========================== NEW USER=================================== */
+
+.new-user-box{
+    height: 700px;
+}

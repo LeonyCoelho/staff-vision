@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+
+<title>CONTROLE DE EFETIVOS - </title>
+<!-- CONSTRUA O TEMPLATE AQUI -->
+<div class="container">
+    <div class="card custom-card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            PRESETS       
+        </div>
+                <div class="card-body">
+                    <form method="post" class="form-inline" id="preset-form">
+                        <div class="input-group">
+                            {% csrf_token %}
+                            {{ preset_form.preset_name }}
+                            <button class="btn btn-primary form-button" type="submit"><span><i class="nf nf-oct-diff_added"></i></span></button>
+                        </div>
+                    </form>
+                    <div class="preset-settings-box">
+                        <form method="post" id="delete-selected-preset-form">
+                            {% csrf_token %}
+                            <ul class="list-group" id="preset-list">
+                                {% for Dashboard_Presets in preset_list %}
+                                <li class="list-group-item">
+                                    <div class="form-check d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <input class="form-check-input" type="checkbox" name="selected_items_preset" value="{{ Dashboard_Presets.id }}">
+                                            <label class="form-check-label">
+                                                {{Dashboard_Presets.id}} - 
+                                                {{ Dashboard_Presets.preset_name }}
+                                            </label>
+                                        </div>
+                                        <div class="text-end">
+                                            <!-- <a class="btn btn-primary text-end" href="{% url 'auto_update_positions' Dashboard_Presets.id %}">
+                                                AUTOUPDATE POSITIONS
+                                            </a>                                         -->
+                                            <!-- <a class="btn btn-primary text-end" href="{% url 'update_position' Dashboard_Presets.id %}">
+                                                UPDATE POSITIONS
+                                            </a> -->
+                                            <a class="btn btn-primary text-end" href="{% url 'edit_layout' Dashboard_Presets.id %}">
+                                                Editar Layout
+                                            </a>
+                                            <a class="btn btn-primary text-end" href="{% url 'edit_preset' Dashboard_Presets.id %}">
+                                                Editar Setores
+                                            </a>
+                                        </div>
+                                    </div>
+                                </li>
+                                {% endfor %}
+                            </ul>                            
+                        </div>
+                        <button type="button" id="delete-selected-preset-button" class="btn btn-danger mt-2"><span><i class="nf nf-fa-remove"></i></span> Remover</button>
+                    </form>
+                </div>                    
+            </div>
+</div>
+
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+            <script>
+                $(document).ready(function() {
+                    // Quando o botão "<span><i class="nf nf-fa-remove"></i></span> Remover" é clicado
+                    $("#delete-selected-preset-button").click(function() {
+                        // Crie um array para armazenar os IDs dos itens selecionados
+                        var selectedItemsPrt = [];
+                
+                        // Encontre todos os checkboxes marcados
+                        $("input[name='selected_items_preset']:checked").each(function() {
+                            selectedItemsPrt.push($(this).val());
+                        });
+                
+                        // Verifique se pelo menos um item foi selecionado
+                        if (selectedItemsPrt.length > 0) {
+                            // Log dos IDs para verificação (remova isso em produção)
+                            console.log(selectedItemsPrt);
+                
+                            // Enviar os IDs dos itens selecionados para a view do Django para deletar os itens
+                            $.post('{% url 'delete_selected_presets' %}', { 'selected_items_preset[]': selectedItemsPrt, csrfmiddlewaretoken: '{{ csrf_token }}' }, function(data) {
+                                // Recarregar a página ou atualizar a lista de itens na página, se necessário
+                                location.reload();
+                            });
+                        } else {
+                            alert("Nenhum item selecionado.");
+                        }
+                    });
+                });
+                </script>
+
+{% endblock %}

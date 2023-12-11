@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+{% load static %}
+{% csrf_token %}
+
+<title>CONTROLE DE EFETIVOS - Novo Usuário</title>
+<!-- CONSTRUA O TEMPLATE AQUI -->
+
+<div class="container">
+
+<!-- <div class="card custom-card-layout">
+    EDITAR LAYOUT - {{preset.id}}
+</div> -->
+
+
+            <div class="row">
+                <div class="col-12">
+                    <div  class="card custom-card">
+                        <div class="card-header">EDITAR LAYOUT </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6">
+                                    <h4 class="card-title">
+                                        {{preset.preset_name}} - {{preset.id}}
+                                    </h4>
+                                    <!-- <div class="dropdown">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button" id="width-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                          Tamanho
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="width-dropdown">
+                                          <a class="dropdown-item" data-width="3">Pequeno</a>
+                                          <a class="dropdown-item" data-width="4">Médio</a>
+                                          <a class="dropdown-item" data-width="6">Médio-Grande</a>
+                                          <a class="dropdown-item" data-width="9">Grande</a>
+                                          <a class="dropdown-item" data-width="12">Enorme</a>                  
+                                        </ul>
+                                      </div> -->
+                                </div>
+                                <div class="col-6 text-end">
+                                    <a class="btn btn-danger text-end" href="{% url 'reset_update_positions' preset.id %}">
+                                        Reset
+                                    </a>      
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+                <div class="row" id="sortable">
+                    {% for value in values_to_print %}
+                        <div class="col-{{ value.Width }} draggable-card" data-id="{{ value.ID }}">
+                            <div class="card custom-card-layout">
+                                <div class="card-header">
+                                    {{ value.Sector }} - {{ value.Order }}
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-8">
+                                            <div class="dropdown">
+                                                <button class="btn btn-secondary dropdown-toggle" type="button" id="width-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                                  Tamanho
+                                                </button>
+                                                <ul class="dropdown-menu" aria-labelledby="width-dropdown">
+                                                  <a class="dropdown-item" data-width="3">Pequeno</a>
+                                                  <a class="dropdown-item" data-width="4">Médio</a>
+                                                  <a class="dropdown-item" data-width="6">Médio-Grande</a>
+                                                  <a class="dropdown-item" data-width="9">Grande</a>
+                                                  <a class="dropdown-item" data-width="12">Enorme</a>                  
+                                                </ul>
+                                              </div>
+                                        </div>
+                                        <div class="col-4 text-end text-muted">
+                                            <h3 class="">
+                                              <i class="nf nf-cod-move"></i>
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <button id="save-order" class="btn btn-primary" style="margin-bottom: 1rem;">Salvar Ordem</button>
+
+
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/3.0.1/js.cookie.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+
+<script>
+$(function () {
+    $("#sortable").sortable({
+        items: "> div",
+    });
+    $("#sortable").disableSelection();
+
+    $("#save-order").on("click", function () {
+        var newOrder = [];
+        $("#sortable > div").each(function () {
+            newOrder.push($(this).data("id"));
+        });
+
+        var csrftoken = Cookies.get('csrftoken');
+
+        $.ajaxSetup({
+            headers: { "X-CSRFToken": csrftoken }
+        });
+
+        // Enviar a nova ordem para o servidor
+        $.ajax({
+            url: "{% url 'update_positions' preset.id %}",
+            type: "POST",
+            data: JSON.stringify(newOrder),
+            contentType: "application/json",
+            success: function (data) {
+                alert(data.message);
+            },
+        });
+    });
+});
+
+    </script>
+<script>
+    $(function () {
+        $(".dropdown-item").on("click", function () {
+            var newWidth = $(this).data("width");
+            var sectorId = $(this).closest(".draggable-card").data("id");
+    
+            var csrftoken = Cookies.get('csrftoken');
+    
+            $.ajaxSetup({
+                headers: { "X-CSRFToken": csrftoken }
+            });
+    
+            // Enviar o novo valor da largura para o servidor
+            $.ajax({
+                url: `/dashboard_settings/update_sector_width/${sectorId}/${newWidth}/`,
+                type: "POST",
+                success: function (data) {
+                    // alert(data.message);
+                    
+                    // Recarregue a página após a atualização
+                    window.location.reload();
+                },
+            });
+        });
+    });
+</script>
+
+    
+
+
+
+
+{% endblock %}
