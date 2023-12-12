@@ -12,6 +12,7 @@ urlpatterns = [
     path('view_by_status/<int:id>/', views.view_by_status, name='view_by_status'),
 
     path('login/', views.login, name='login'),
+    path('logout_view/', views.logout_view, name='logout_view'),
 
     path('settings/',views.settings, name='settings'),
 
@@ -21,9 +22,11 @@ urlpatterns = [
     path('users/delete_user/<int:id>/', views.delete_user, name='delete_user'),
     
     path('new_worker/',views.new_worker, name='new_worker'),
-    path('update_worker/',views.update_worker, name='update_worker'),
+    path('update_worker/',views.update_worker, name='update_worker'),    
+    path('remove_worker_status/<int:worker_id>/', views.remove_worker_status, name='remove_worker_status'),
     path('adjust_worker/',views.adjust_worker, name='adjust_worker'),
     path('edit_worker/<int:id_worker>/',views.edit_worker, name='edit_worker'),
+
 
     path('change_settings', views.change_settings, name='change_settings'),
     path('change_logo', views.change_logo, name='change_logo'),

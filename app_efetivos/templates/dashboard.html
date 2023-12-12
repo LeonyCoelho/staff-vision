@@ -46,8 +46,10 @@
                         <i class="nf nf-md-account_edit"></i>&nbsp;&nbsp;&nbsp;Editar Colaboradores
                     </a>
                   </li>
-                <hr>
 
+                {% if request.user.is_staff %}
+                <hr>
+                  
                   <li>
                     <a href="{% url 'settings' %}" class="nav-link link-dark">
                         <i class="nf nf-seti-settings"></i>&nbsp;&nbsp;&nbsp;Preferência Gerais
@@ -63,6 +65,7 @@
                         <i class="nf nf-md-account_cog"></i>&nbsp;&nbsp;&nbsp;Usuários
                     </a>
                   </li>
+                  {% endif %}
                 </ul>
                 
                 <hr>
@@ -71,9 +74,12 @@
                     <strong>{{user.customuser.name}}</strong>
                   </a>
                   <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2">
-                    <li><a class="dropdown-item" href="#">Preferências</a></li>                    <li><a class="dropdown-item" href="#">Profile</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="#">Sair</a></li>
+                    <!-- <li><a class="dropdown-item" href="#">Preferências</a></li>                    
+                    <li><a class="dropdown-item" href="#">Profile</a></li>
+                    <li><hr class="dropdown-divider"></li> -->
+                    <li class="nav-item">
+                      <a class="dropdown-item" href="{% url 'logout_view' %}">SAIR</a>
+                    </li>
                   </ul>
                 </div>
               </div>

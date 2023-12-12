@@ -13,74 +13,76 @@
         </div>
         <div class="card-body">
 
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <div class="alert alert-danger" role="alert">
+                            <p{% if message.tags %} class="{{ message.tags }}"{% endif %} style="text-decoration: none;">{{ message }}</p>
+                        </div>
+                    {% endfor %}
+                    </div>
+            {% endif %}
+
             <form action="{% url 'edit_worker' worker.id_worker %}" method="post">
                 {% csrf_token %}
                 
                 <div class="row">
                     <input type="hidden" name="worker_id" value="{{ worker.id_worker }}">
-                <div class="col-2">
-                    <label>Matrícula</label>
-                    <input class="form-control customFormDeco" type="text" name="number" required pattern="[0-9]{6}" placeholder="Matricula" value="{{ worker.number_w }}" title="O numero da matrícula deve conter 6 digitos." oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                </div>
+                    <div class="col-2">
+                        <label>Matrícula</label>
+                        <input class="form-control customFormDeco" type="text" name="number" required pattern="[0-9]{6}" placeholder="Matricula" value="{% if worker.number_w %}{{ worker.number_w|stringformat:'06d' }}{% else %}000000{% endif %}" title="O numero da matrícula deve conter 6 digitos." oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                    </div>
+                    
                 <div class="col-10">
                     <label>Nome do Colaborador</label>
                     <input class="form-control" type="text" name="name" placeholder="Nome do Colaborador" value="{{ worker.name_w }}" autofocus  required>
                 </div>
                 <div class="col-4">
-                    <label>{{globalsettings.position_title}}</label>
-                    <select class="form-select" name="position" required>
-                        {% for position in worker.position_w.all %}
-                            <option disabled selected hidden value="{{ position.position_name }}"> {{ position.position_name }}</option>
-                        {% endfor %}
-                        {% for position in position_list%}
-                        <option>{{position.position_name}}</option>
+                    <label>{{ globalsettings.position_title }}</label>
+                    <select class="form-select" name="position">
+                        <option disabled hidden></option>
+                        {% for position in position_list %}
+                            <option {% if worker.position_w.all.exists and worker.position_w.first.position_name == position.position_name %} selected {% endif %}>{{ position.position_name }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="col-4">
-                    <label>{{globalsettings.establishment_title}}</label>
-                    <select class="form-select" name="establishment" required>
-                        {% for establishment in worker.establishment_w.all %}
-                            <option disabled selected hidden value="{{ establishment.establishment_name }}">{{ establishment.establishment_name }}</option>
-                        {% endfor %}
+                    <label>{{ globalsettings.establishment_title }}</label>
+                    <select class="form-select" name="establishment">
+                        <option disabled hidden></option>
                         {% for establishment in establishment_list %}
-                        <option>{{establishment.establishment_name}}</option>
+                            <option {% if worker.establishment_w.all.exists and worker.establishment_w.first.establishment_name == establishment.establishment_name %} selected {% endif %}>{{ establishment.establishment_name }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="col-4">
-                    <label>{{globalsettings.shift_title}}</label>
-                    <select class="form-select" name="shift" required>
-                        {% for shift in worker.shift_w.all %}
-                            <option disabled selected hidden value="{{ shift.shift_name }}">{{ shift.shift_name }}</option>
-                        {% endfor %}
+                    <label>{{ globalsettings.shift_title }}</label>
+                    <select class="form-select" name="shift">
+                        <option disabled hidden></option>
                         {% for shift in shift_list %}
-                        <option>{{shift.shift_name}}</option>
+                            <option {% if worker.shift_w.all.exists and worker.shift_w.first.shift_name == shift.shift_name %} selected {% endif %}>{{ shift.shift_name }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="col-6">
-                    <label>{{globalsettings.sector_title}}</label>
-                    <select class="form-select" name="sector" required>
-                        {% for sector in worker.sector_w.all %}
-                        <option disabled selected hidden value="{{ sector.sector_name }}">{{ sector.sector_name }}</option>
-                        {% endfor %}
+                    <label>{{ globalsettings.sector_title }}</label>
+                    <select class="form-select" name="sector">
+                        <option disabled hidden></option>
                         {% for sector in sector_list %}
-                        <option value="{{ sector.sector_name }}">{{ sector.sector_name }}</option>
+                            <option {% if worker.sector_w.all.exists and worker.sector_w.first.sector_name == sector.sector_name %} selected {% endif %}>{{ sector.sector_name }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="col-6">
-                    <label>{{globalsettings.subSector_title}}</label>
-                    <select class="form-select" name="subSector" required>
-                        {% for subSector in worker.subSector_w.all %}
-                            <option disabled selected hidden value="{{ subSector.subSector_name }}">{{ subSector.subSector_name }}</option>
-                        {% endfor %}
+                    <label>{{ globalsettings.subSector_title }}</label>
+                    <select class="form-select" name="subSector">
+                        <option disabled hidden></option>
                         {% for subSector in subSector_list %}
-                        <option value="{{subSector.subSector_name}}">{{subSector.subSector_name}}</option>
+                            <option {% if worker.subSector_w.all.exists and worker.subSector_w.first.subSector_name == subSector.subSector_name %} selected {% endif %}>{{ subSector.subSector_name }}</option>
                         {% endfor %}
                     </select>
                 </div>
+                
                     
 
                     
@@ -91,16 +93,16 @@
                 <div class="card-footer">
                     <button class=" btn btn-primary customBtn" type="submit">Enviar</button>
                 </form>
-                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteUserModal">
+                <!-- <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteUserModal">
                     Remover Usuário
-                </button>
+                </button> -->
                 </div>
 
         
     </div>
 </div>
 
-<div class="modal fade" id="deleteUserModal" tabindex="-1" role="dialog" aria-labelledby="deleteUserModalLabel" aria-hidden="true">
+<!-- <div class="modal fade" id="deleteUserModal" tabindex="-1" role="dialog" aria-labelledby="deleteUserModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -121,7 +123,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
 
 

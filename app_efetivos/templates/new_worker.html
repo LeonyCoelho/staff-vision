@@ -9,6 +9,15 @@
             Novo Colaborador         
         </div>
         <div class="card-body">
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <div class="alert alert-danger" role="alert">
+                            <p{% if message.tags %} class="{{ message.tags }}"{% endif %} style="text-decoration: none;">{{ message }}</p>
+                        </div>
+                    {% endfor %}
+                    </div>
+            {% endif %}
             <form action="{% url 'new_worker' %}" method="post">
                 {% csrf_token %}
                 <div class="from-group">

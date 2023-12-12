@@ -99,7 +99,7 @@ z-index: 100;
     background-color: #23518F9f !important; 
     border-radius: 10px;
     font-weight: bold;
-    color: #ffffff !important;
+    color: #ffffff;
     border-bottom: 1px solid #9dcaf341;
     box-shadow: 0px 0px 40px 0px rgba(0,0,0,0.54);
     -webkit-box-shadow: 0px 0px 40px 0px rgba(0,0,0,0.54);
@@ -107,6 +107,14 @@ z-index: 100;
     backdrop-filter: blur(10px);
     position: relative;
     z-index: 200;
+}
+
+.login-input{
+    color: #313131 !important;
+}
+
+.login-text{
+    color: #ffffff !important;
 }
 
 .custom-card-layout{
@@ -162,6 +170,10 @@ z-index: 100;
 .title{
     margin-bottom: 1rem;
     margin-top: 1rem;
+}
+
+.clear-btn{
+    border-radius: 0px 10px 10px 0px;
 }
 
 /* ================================= THEMING ================================ */

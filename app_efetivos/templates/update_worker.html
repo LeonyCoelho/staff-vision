@@ -76,9 +76,15 @@
                             {% for worker in workers %}
                             <tr style="cursor: pointer;">
                                 <td data-bs-toggle="modal" data-bs-target="#workerModal{{ worker.id_worker }}" hidden>{{ worker.id_worker }}</td>
-                                <td class="d-none d-md-table-cell" data-bs-toggle="modal" data-bs-target="#workerModal{{ worker.id_worker }}">{{ worker.number_w }}</td>
-                                <td class="d-flex flex-column d-md-table-cell " style="font-weight: bold;" data-bs-toggle="modal" data-bs-target="#workerModal{{ worker.id_worker }}">{{ worker.name_w.split.0 }} {{ worker.name_w.split|last }}</td>
-                                <td class="d-none d-md-table-cell" data-bs-toggle="modal" data-bs-target="#workerModal{{ worker.id_worker }}">
+                                <td class="align-middle d-none d-md-table-cell" data-bs-toggle="modal" data-bs-target="#workerModal{{ worker.id_worker }}">
+                                    {% if worker.number_w %}
+                                        {{ worker.number_w|stringformat:'06d' }}
+                                    {% else %}
+                                        000000
+                                    {% endif %}
+                                </td>
+                                <td class="align-middle d-flex flex-column d-md-table-cell " style="font-weight: bold;" data-bs-toggle="modal" data-bs-target="#workerModal{{ worker.id_worker }}">{{ worker.name_w.split.0 }} {{ worker.name_w.split|last }}</td>
+                                <td class="align-middle d-none d-md-table-cell" data-bs-toggle="modal" data-bs-target="#workerModal{{ worker.id_worker }}">
                                     {% for position in worker.position_w.all %}
                                         {{ position.position_name|truncatechars:30|default:"..." }} 
                                     {% empty %}
@@ -86,30 +92,35 @@
                                     {% endfor %}
                                 </td>
                                 <td hidden>{{ worker.sector_w.first.sector_name }}</td>
-                                <td class="d-none d-md-table-cell" data-bs-toggle="modal" data-bs-target="#workerModal{{ worker.id_worker }}">
+                                <td class="align-middle d-none d-md-table-cell" data-bs-toggle="modal" data-bs-target="#workerModal{{ worker.id_worker }}">
                                     {% for establishment in worker.establishment_w.all %}
                                         {{ establishment.establishment_name }}
                                     {% empty %}
                                         N/A
                                     {% endfor %}
                                 </td>
-                                <td class="d-none d-md-table-cell" data-bs-toggle="modal" data-bs-target="#workerModal{{ worker.id_worker }}">
+                                <td class="align-middle d-none d-md-table-cell" data-bs-toggle="modal" data-bs-target="#workerModal{{ worker.id_worker }}">
                                     {% for shift in worker.shift_w.all %}
                                         {{ shift.shift_name }}
                                     {% empty %}
                                         N/A
                                     {% endfor %}
                                 </td>
-                                <td class="d-flex flex-column d-md-table-cell">
-                                    <input type="text" class="form-control" style="margin-bottom: 0px; height: 2rem;" name="observation_w_{{ worker.id_worker }}" placeholder="Observações" value="{{ worker.observation_w }}">
+                                <td class="align-middle d-flex flex-column d-md-table-cell">
+                                    <input type="text" class="form-control" style="margin-bottom: 0px; height: 2.5rem;" name="observation_w_{{ worker.id_worker }}" placeholder="Observações" value="{{ worker.observation_w }}">
                                 </td>
-                                <td class="d-flex flex-column d-md-table-cell">
-                                    <select class="form-select" style="border-color:{{ worker.status_w.first.status_color }}; border-width:1px 10px; margin-bottom: 0px; height: 2rem;" name="status_w_{{ worker.id_worker }}">
-                                        <option selected disabled hidden>{{ worker.status_w.first.status_name }}</option>
-                                        {% for status_name in status_list %}
-                                        <option value="{{ status_name }}">{{ status_name }}</option>
-                                        {% endfor %}
-                                    </select>
+                                <td class="align-middle d-flex flex-column d-md-table-cell">
+                                    <div class="input-group">
+                                        <select class="form-select" style="border-color:{{ worker.status_w.first.status_color }}; border-width:1px 10px; margin-bottom: 0px; height: 2.5rem;" name="status_w_{{ worker.id_worker }}">
+                                            <option selected disabled hidden>{{ worker.status_w.first.status_name }}</option>
+                                            {% for status_name in status_list %}
+                                            <option value="{{ status_name }}">{{ status_name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <div class="input-group-append">
+                                            <button onclick="removeWorkerStatus({{ worker.id_worker }})" class="btn btn-outline-secondary clear-btn" style="height: 2.5rem"  type="button"><i class="nf nf-md-broom"></i></button>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
                             {% empty %}
@@ -292,6 +303,38 @@
       document.documentElement.scrollTop = 0;
     }
   </script>
+
+
+<script>
+    function removeWorkerStatus(workerId) {
+        console.log('Removendo status do trabalhador ID:', workerId);
+        if (confirm('Tem certeza que deseja remover o status deste colaborador?')) {
+            $.ajax({
+                type: 'POST',
+                url: '/remove_worker_status/' + workerId + '/',
+                dataType: 'json',
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+                },
+                success: function (data) {
+                    // Dentro do bloco 'success' do seu AJAX
+                    if (data.success) {
+                        alert('Status removido com sucesso!');
+                        var select = $('select[name="status_w_' + workerId + '"]');
+                        select.val(null); // Remove a seleção atual
+                        select.css('border-color', '#e5e5e5');
+                    } else {
+                        alert('Falha ao remover o status do colaborador.');
+                    }
+
+                },
+                error: function () {
+                    alert('Erro ao enviar requisição.');
+                }
+            });
+        }
+    }
+</script>
 
 
 

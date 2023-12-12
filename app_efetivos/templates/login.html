@@ -49,19 +49,19 @@
 
     
 <main class="form-signin login-box">
-  <form>
-    <img class="mb-4" src="{{ globalsettings.logo_image.url }}" alt="" height="100">
-    <h1 class="h3 mb-3 fw-normal">Entrar com credenciais</h1>
+  <form class="from-group" action="{% url 'login' %}" method="POST">{% csrf_token %}
+    <img class="mb-0" src="{{ globalsettings.logo_image.url }}" alt="" height="100">
+    <h1 class="h3 mb-3 fw-normal login-text">Entrar com credenciais</h1>
 
     <div class="form-floating">
-      <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
-      <label for="floatingInput">Nome de usuário</label>
+      <input type="text" class="form-control" name="username" id="floatingInput" placeholder="name@example.com">
+      <label for="floatingInput" class=" login-input">Nome de usuário</label>
     </div>
     <div class="form-floating">
-      <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
-      <label for="floatingPassword">Senha</label>
+      <input type="password" class="form-control" name="passwd" id="floatingPassword" placeholder="Password">
+      <label for="floatingPassword" class=" login-input">Senha</label>
     </div>
-    <button class="w-100 btn btn-lg btn-primary" type="submit">Acessar</button>
+    <button class="w-100 btn btn-lg btn-primary login-text" type="submit">Acessar</button>
     <p class="mt-5 mb-3 text-muted">&copy; 2023</p>
   </form>
 </main>

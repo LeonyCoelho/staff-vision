@@ -23,6 +23,7 @@ ALLOWED_HOSTS = []
 SESSION_COOKIE_NAME = 'session_controle_efetivos'
 
 
+
 # Application definition
 
 INSTALLED_APPS = [

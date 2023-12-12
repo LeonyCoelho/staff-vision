@@ -41,6 +41,10 @@ body{
     margin-top: 1rem;
 }
 
+.clear-btn{
+    border-radius: 0px 2px 2px 0px;
+}
+
 /* ================================= THEMING ================================ */
 
 .btn-primary{

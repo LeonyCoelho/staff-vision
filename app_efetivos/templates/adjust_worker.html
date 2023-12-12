@@ -42,9 +42,15 @@
                             {% for worker in workers %}
                             <tr style="cursor: pointer;" onclick="location.href='/edit_worker/{{ worker.id_worker }}' ">
                                 <td data-bs-toggle="modal" data-bs-target="#workerModal{{ worker.id_worker }}" hidden>{{ worker.id_worker }}</td>
-                                <td class="d-none d-md-table-cell" data-bs-toggle="modal" data-bs-target="#workerModal{{ worker.id_worker }}">{{ worker.number_w }}</td>
-                                <td class="d-flex flex-column d-md-table-cell " style="font-weight: bold;" data-bs-toggle="modal" data-bs-target="#workerModal{{ worker.id_worker }}">{{ worker.name_w.split.0 }} {{ worker.name_w.split|last }}</td>
-                                <td class="d-none d-md-table-cell" data-bs-toggle="modal" data-bs-target="#workerModal{{ worker.id_worker }}">
+                                <td class="align-middle d-none d-md-table-cell" data-bs-toggle="modal" data-bs-target="#workerModal{{ worker.id_worker }}">
+                                    {% if worker.number_w %}
+                                        {{ worker.number_w|stringformat:'06d' }}
+                                    {% else %}
+                                        000000
+                                    {% endif %}
+                                </td>
+                                <td class="align-middle d-flex flex-column d-md-table-cell " style="font-weight: bold;" data-bs-toggle="modal" data-bs-target="#workerModal{{ worker.id_worker }}">{{ worker.name_w.split.0 }} {{ worker.name_w.split|last }}</td>
+                                <td class="align-middle d-none d-md-table-cell" data-bs-toggle="modal" data-bs-target="#workerModal{{ worker.id_worker }}">
                                     {% for position in worker.position_w.all %}
                                         {{ position.position_name|truncatechars:50|default:"..." }} 
                                     {% empty %}
@@ -52,14 +58,14 @@
                                     {% endfor %}
                                 </td>
                                 <td hidden>{{ worker.sector_w.first.sector_name }}</td>
-                                <td class="d-none d-md-table-cell" data-bs-toggle="modal" data-bs-target="#workerModal{{ worker.id_worker }}">
+                                <td class="align-middle d-none d-md-table-cell" data-bs-toggle="modal" data-bs-target="#workerModal{{ worker.id_worker }}">
                                     {% for establishment in worker.establishment_w.all %}
                                         {{ establishment.establishment_name }}
                                     {% empty %}
                                         N/A
                                     {% endfor %}
                                 </td>
-                                <td class="d-none d-md-table-cell" data-bs-toggle="modal" data-bs-target="#workerModal{{ worker.id_worker }}">
+                                <td class="align-middle d-none d-md-table-cell" data-bs-toggle="modal" data-bs-target="#workerModal{{ worker.id_worker }}">
                                     {% for shift in worker.shift_w.all %}
                                         {{ shift.shift_name }}
                                     {% empty %}

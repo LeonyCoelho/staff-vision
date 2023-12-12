@@ -35,6 +35,7 @@
                       <li><a class="dropdown-item" href="{% url 'adjust_worker' %}"><i class="nf nf-md-account_edit"></i>&nbsp;&nbsp;&nbsp;Ajustar Colaboradores</a></li>
                     </ul>
                   </li>
+                  {% if request.user.is_staff %}
                   <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="admDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Area Administrativa
@@ -45,6 +46,7 @@
                       <li><a class="dropdown-item" href="{% url 'users' %}"><i class="nf nf-md-account_cog"></i>&nbsp;&nbsp;&nbsp;Usuários</a></li>
                     </ul>
                   </li>
+                  {% endif %}
                 </ul>
                 <div class="d-flex">
                   <ul class="navbar-nav me-auto mb-2 mb-lg-0">
@@ -52,7 +54,7 @@
                         <a class="nav-link" href="#">{{user.customuser.name}}</a>
                       </li>
                       <li class="nav-item">
-                        <a class="nav-link" href="#">SAIR</a>
+                        <a class="nav-link" href="{% url 'logout_view' %}">SAIR</a>
                       </li>
                     </ul>
                 </div>
