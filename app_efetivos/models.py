@@ -69,6 +69,10 @@ class Preset_Settings(models.Model):
     sector = models.ForeignKey(Sector, on_delete=models.CASCADE)
     sector_position = models.IntegerField(default=0)
     sector_width = models.IntegerField(default=3)
+
+class Preset_Header(models.Model):
+    preset = models.ForeignKey(Dashboard_Presets, on_delete=models.CASCADE)
+    header_width = models.IntegerField(default=12)
     
     
 class CustomUser(models.Model):

@@ -15,6 +15,12 @@ urlpatterns = [
     path('logout_view/', views.logout_view, name='logout_view'),
 
     path('settings/',views.settings, name='settings'),
+    path('apply_defauts', views.apply_defauts, name='apply_defauts'),
+    path('welcome', views.welcome, name='welcome'),
+    path('welcome2', views.welcome2, name='welcome2'),
+    path('welcome3', views.welcome3, name='welcome3'),
+    path('welcome4', views.welcome4, name='welcome4'),
+    path('create_default_settings/', views.create_default_settings, name='create_default_settings'),
 
     path('users/',views.users, name='users'),
     path('users/new_user/',views.new_user, name='new_user'),
@@ -48,7 +54,7 @@ urlpatterns = [
     path('dashboard_settings/reset_update_positions/<int:id>/', views.reset_update_positions, name='reset_update_positions'),
     path('dashboard_settings/update_position/<int:id>/', views.update_position, name='update_position'),
     path('dashboard_settings/update_sector_width/<int:sector_id>/<int:new_width>/', views.update_sector_width, name='update_sector_width'),
-
+    path('dashboard_settings/update_header_width/<int:preset_id>/<int:new_width>/', views.update_header_width, name='update_header_width'),
 
     
     path('delete_selected_establishments/', views.delete_selected_establishments, name='delete_selected_establishments'),
@@ -69,6 +75,8 @@ urlpatterns = [
     path('delete_selected_status/', views.delete_selected_status, name='delete_selected_statuss'),
     path('rename_status/', views.rename_status, name='rename_status'),
     path('change_status_color/', views.change_status_color, name='change_status_color'),
+
+    path('reset/', views.reset, name='reset'),
 ]
 
 
