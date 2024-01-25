@@ -1,4 +1,4 @@
-command = '/home/deploy/env-controle-efetivos/bin/gunicorn'
-pythonpath = '/home/deploy/controle_efetivos/controle_efetivos/'
-bind = '10.42.68.30:8004'
+command = '/home/deploy/env-controle-efetivo/bin/gunicorn'
+pythonpath = '/home/deploy/controle-de-efetivo/controle_efetivos/'
+bind = '10.42.68.2:8008'
 workers = 2

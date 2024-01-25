@@ -1,24 +1,16 @@
 @import "https://www.nerdfonts.com/assets/css/webfont.css";
+
 body{
     background-color: rgb(220, 227, 245);
 }
 
 .customNavbar{
     margin-bottom: 1rem;
-    color: rgba(0, 0, 0, 0.9);
-    background-color: #fff !important;
-}
-
-.nav-link{
-    color: rgba(0, 0, 0, 0.9);
 }
 
 .custom-card{
     margin-bottom: 1.5rem;
-}
-
-.out-card{
-    margin-bottom: 1.5rem;
+    /* border-radius: 15px; */
 }
 
 .card-header{
@@ -49,8 +41,8 @@ body{
     margin-top: 1rem;
 }
 
-.btn-dashboard-menu{
-    margin: 1rem;
+.clear-btn{
+    border-radius: 0px 2px 2px 0px;
 }
 
 /* ================================= THEMING ================================ */
@@ -63,7 +55,7 @@ body{
 /* =============================== SETTINGS ============================= */
 
 .theme-box{
-    height: 625px;
+    height: 300px;
 }
 .logo-box{
     height: 300px;

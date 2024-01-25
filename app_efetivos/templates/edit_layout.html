@@ -13,17 +13,17 @@
 </div> -->
 
 
-            <div class="row">
-                <div class="col-12">
-                    <div  class="card custom-card">
+            <div class="row" id="sortable">
+                <div class="col-{{header_width}} out-card" id="header-preset">
+                    <div  class="card custom-card-dashboard h-100">
                         <div class="card-header">EDITAR LAYOUT </div>
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-6">
                                     <h4 class="card-title">
-                                        {{preset.preset_name}} - {{preset.id}}
+                                        {{preset.preset_name}} - {{preset.id}} - Tamanho - {{header_width}}
                                     </h4>
-                                    <!-- <div class="dropdown">
+                                    <div class="dropdown">
                                         <button class="btn btn-secondary dropdown-toggle" type="button" id="width-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                           Tamanho
                                         </button>
@@ -34,7 +34,7 @@
                                           <a class="dropdown-item" data-width="9">Grande</a>
                                           <a class="dropdown-item" data-width="12">Enorme</a>                  
                                         </ul>
-                                      </div> -->
+                                      </div>
                                 </div>
                                 <div class="col-6 text-end">
                                     <a class="btn btn-danger text-end" href="{% url 'reset_update_positions' preset.id %}">
@@ -45,13 +45,13 @@
                         </div>
                     </div>
                 </div>
-            </div>
 
 
-                <div class="row" id="sortable">
+
+                
                     {% for value in values_to_print %}
-                        <div class="col-{{ value.Width }} draggable-card" data-id="{{ value.ID }}">
-                            <div class="card custom-card-layout">
+                        <div class="col-{{ value.Width }} draggable-card out-card " data-id="{{ value.ID }}">
+                            <div class="card custom-card-layout h-100">
                                 <div class="card-header">
                                     {{ value.Sector }} - {{ value.Order }}
                                 </div>
@@ -95,38 +95,38 @@
 
 
 <script>
-$(function () {
-    $("#sortable").sortable({
-        items: "> div",
+    $(function () {
+        $("#sortable").sortable({
+            items: "> div:not(#header-preset)", // Exclui o elemento com id="header-preset" da ordenação
+        });
+        $("#sortable").disableSelection();
+
+        $("#save-order").on("click", function () {
+            var newOrder = [];
+            $("#sortable > div").each(function () {
+                newOrder.push($(this).data("id"));
+            });
+
+            var csrftoken = Cookies.get('csrftoken');
+
+            $.ajaxSetup({
+                headers: { "X-CSRFToken": csrftoken }
+            });
+
+            // Enviar a nova ordem para o servidor
+            $.ajax({
+                url: "{% url 'update_positions' preset.id %}",
+                type: "POST",
+                data: JSON.stringify(newOrder),
+                contentType: "application/json",
+                success: function (data) {
+                    alert(data.message);
+                },
+            });
+        });
     });
-    $("#sortable").disableSelection();
 
-    $("#save-order").on("click", function () {
-        var newOrder = [];
-        $("#sortable > div").each(function () {
-            newOrder.push($(this).data("id"));
-        });
-
-        var csrftoken = Cookies.get('csrftoken');
-
-        $.ajaxSetup({
-            headers: { "X-CSRFToken": csrftoken }
-        });
-
-        // Enviar a nova ordem para o servidor
-        $.ajax({
-            url: "{% url 'update_positions' preset.id %}",
-            type: "POST",
-            data: JSON.stringify(newOrder),
-            contentType: "application/json",
-            success: function (data) {
-                alert(data.message);
-            },
-        });
-    });
-});
-
-    </script>
+</script>
 <script>
     $(function () {
         $(".dropdown-item").on("click", function () {
@@ -153,7 +153,33 @@ $(function () {
         });
     });
 </script>
+<script>
+    $(function () {
+        $(".dropdown-item").on("click", function () {
+            var newWidth = $(this).data("width");
+            var presetId = "{{ preset.id }}";  // Obtendo o ID do preset do contexto Django
+    
+            console.log("Preset ID:", presetId); // Adicione este console.log para verificar o valor
 
+            $.ajax({
+                url: `/dashboard_settings/update_header_width/${presetId}/${newWidth}/`,
+                type: "POST",
+                success: function (data) {
+                    // alert(data.message);
+                    // Recarregar a página ou atualizar apenas a seção necessária após a atualização
+                    window.location.reload();
+                },
+                error: function (xhr, status, error) {
+                    alert("Erro ao atualizar a largura do header.");
+                }
+            });
+        });
+    });
+    </script>
+    
+    
+    
+    
     
 
 

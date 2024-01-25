@@ -1,5 +1,5 @@
 from django import forms
-from .models import Establishment , Sector, Sub_Sector, Position, Shift, Status, Global_Settings, Dashboard_Presets
+from .models import Establishment , Sector, Sub_Sector, Position, Shift, Status, Global_Settings, Dashboard_Presets, Preset_Header
 
 
 
@@ -75,3 +75,7 @@ class PresetForm(forms.ModelForm):
         widgets = {
             'preset_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder':'Nova entrada'}),
         }
+    def save(self, commit=True):
+        instance = super(PresetForm, self).save(commit)
+        Preset_Header.objects.create(preset=instance, header_width=12)
+        return instance

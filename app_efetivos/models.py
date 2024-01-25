@@ -53,8 +53,8 @@ class Global_Settings(models.Model):
     position_title = models.CharField(max_length=50, default='Cargo')
     status_title = models.CharField(max_length=50, default='Status')
     theme = models.ManyToManyField(Theme)
-    logo_image =  models.ImageField(upload_to='logos/', default='logos/logo.png')
-    bg_image =  models.ImageField(upload_to='bgs/', default='bgs/bg.png')
+    logo_image =  models.ImageField(upload_to='logos/uploaded_logo', default='logos/logo.png')
+    bg_image =  models.ImageField(upload_to='bgs/uploaded_bgs', default='bgs/bg.png')
     institution_name = models.CharField(max_length=60, default='Sua Empresa')
 
 class Dashboard_Presets(models.Model):
@@ -69,6 +69,10 @@ class Preset_Settings(models.Model):
     sector = models.ForeignKey(Sector, on_delete=models.CASCADE)
     sector_position = models.IntegerField(default=0)
     sector_width = models.IntegerField(default=3)
+
+class Preset_Header(models.Model):
+    preset = models.ForeignKey(Dashboard_Presets, on_delete=models.CASCADE)
+    header_width = models.IntegerField(default=12)
     
     
 class CustomUser(models.Model):

@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from app_efetivos.models import Establishment, Sector, Sub_Sector, Position, Shift, Global_Settings, Status, Theme, Worker, CustomUser, Dashboard_Presets, Preset_Settings
+from app_efetivos.models import Establishment, Sector, Sub_Sector, Position, Shift, Global_Settings, Status, Theme, Worker, CustomUser, Dashboard_Presets, Preset_Settings, Preset_Header
 from .forms import EstablishmentForm, SectorForm, SubSectorForm, PositionForm, ShiftForm, StatusForm, ImageUploadForm, ImageUploadForm_Bg, PresetForm
 from django.contrib.auth.models import User
 from django.http import HttpResponse
@@ -22,26 +22,166 @@ from django.contrib.auth import login as login_dj
 
 
 ###############################################################################
+# WELLCOME
+
+
+def apply_defauts(request):
+    default_theme = Theme(
+        id = 1,
+        theme_name = 'default',
+        theme_url = 'default.css'
+    )
+    default_theme.save()
+    fluent_theme = Theme(
+        id = '2',
+        theme_name = 'fluent',
+        theme_url = 'fluent.css'
+    )
+    fluent_theme.save()
+    default_theme = Theme.objects.get(id=1)
+    default_settings = Global_Settings(
+        establishment_title='Estabelecimento',
+        sector_title='Setor',
+        subSector_title='Subsetor',
+        shift_title='Turno',
+        position_title='Cargo',
+        status_title='Status',
+        institution_name='Sua Empresa',
+        logo_image='logos/default.png',
+        bg_image='bgs/default.png',
+    )
+    default_settings.save()
+    default_settings.theme.add(default_theme)
+    return redirect('welcome')
+
+def welcome(request):
+    globalsettings = Global_Settings.objects.all().latest('id')
+    
+    if request.method == 'POST':
+        name = request.POST['name']
+        username = request.POST['username']
+        password = request.POST['password']
+        confirm_password = request.POST['confirm_password']
+        is_staff = '1'
+
+        if password != confirm_password:
+            return render(request, 'new_user.html', {'wrong_password': True})
+        if User.objects.filter(username=username).exists():
+            return render(request, 'new_user.html', {'user_exists': True})
+
+        user = User.objects.create_user(username=username, password=password)
+        user.is_staff = is_staff  # Set the is_staff property of the user
+        user.save()
+
+        new_user = CustomUser.objects.create(
+            user=user,
+            name=name,
+        )
+        new_user.save()
+
+        # Authenticate and log in the user
+        authenticated_user = authenticate(request=request, username=username, password=password)
+        if authenticated_user:
+            login_dj(request, authenticated_user)
+            return redirect('welcome2')
+
+    context = {
+        'globalsettings': globalsettings,
+    }
+    return render(request, 'welcome_page.html', context)
+
+def welcome2(request):
+    globalsettings = Global_Settings.objects.all().latest('id')
+    if request.method == 'POST':
+        selected_theme = request.POST.get('theme')
+        institution = request.POST.get('institution')
+        global_settings = Global_Settings.objects.all().latest('id')
+        theme = Theme.objects.get(theme_name=selected_theme)
+        global_settings.theme.set([theme])
+        global_settings.institution_name =  institution
+        global_settings.save()
+        return redirect('welcome3')
+    context = {
+        'globalsettings':globalsettings
+    }
+    return render(request, 'welcome_page2.html', context)
+
+def welcome3(request):
+    globalsettings = Global_Settings.objects.all().latest('id')
+    if request.method == 'POST':
+        logo_form = ImageUploadForm(request.POST, request.FILES)
+        if logo_form.is_valid():
+            last_global_settings = Global_Settings.objects.latest('id')
+            last_global_settings.logo_image = logo_form.cleaned_data['logo_image']
+            last_global_settings.save()
+            return redirect('settings')
+    else:
+        logo_form = ImageUploadForm()
+    context = {
+        'logo_form':logo_form,
+        'globalsettings':globalsettings
+    }
+    return render(request, 'welcome_page3.html', context)
+
+def welcome4(request):
+    globalsettings = Global_Settings.objects.all().latest('id')
+    bg_form = ImageUploadForm_Bg()
+    if request.method == 'POST':
+        bg_form = ImageUploadForm_Bg(request.POST, request.FILES)
+        if bg_form.is_valid():
+            last_global_settings  = Global_Settings.objects.latest('id')
+            last_global_settings.bg_image = bg_form.cleaned_data['background_image']
+            last_global_settings.save()
+            return redirect('settings')
+    context = {
+        'bg_form':bg_form,
+        'globalsettings':globalsettings
+    }
+    return render(request, 'welcome_page4.html', context)
+
+def create_default_settings(request):
+    # Check if there is already an entry in the Global_Settings table
+    if Global_Settings.objects.exists():
+        return redirect('login')  # Redirect to login page if settings already exist
+
+    # Create default Global_Settings entry
+    default_settings = Global_Settings(
+        establishment_title='Estabelecimento',
+        sector_title='Setor',
+        subSector_title='Subsetor',
+        shift_title='Turno',
+        position_title='Cargo',
+        status_title='Status',
+        institution_name='Sua Empresa'
+        # Add other default values as needed
+    )
+    default_settings.save()
+
+    return redirect('login')  # Redirect to login page after creating default settings
+
+###############################################################################
 # DASHBOARD
 
+@login_required(login_url="/login/")    
 def dashboard(request):
+    print('Opening Dashboard')
     globalsettings = Global_Settings.objects.all().latest('id')
     user = request.user
 
     # Obtenha os presets associados ao usuário logado
     user_presets = user.customuser.preset.all()
-    print(user_presets)
-
     # Inicialize worker_counts como uma lista vazia
     worker_counts = []
 
     if user_presets.exists():
-        print('usuario com preset')
-        
+
         # Crie uma lista de dicionários para armazenar a contagem de trabalhadores por setor e status
         for preset in user_presets:
             preset_settings = Preset_Settings.objects.filter(preset=preset).order_by('sector_position')
             preset_sectors = preset.preset_sectors.all()  # Setores associados a este preset
+
+            preset_header = Preset_Header.objects.get(preset=preset)  # Supondo que haja um campo 'preset' em Preset_Header que corresponda ao preset atual
+            header_width = preset_header.header_width  # Acessando header_width do objeto Preset_Header específico
 
             for preset_setting in preset_settings:
                 sector = preset_setting.sector
@@ -62,11 +202,12 @@ def dashboard(request):
             'globalsettings': globalsettings,
             'worker_counts': worker_counts,
             'status_list': status_list,
+            'header_width':header_width,
         }
         return render(request, 'dashboard.html', context)
     
     else:
-        print('usuario sem preset')
+
         context = {
             'globalsettings': globalsettings,
         }
@@ -86,6 +227,7 @@ def dashboard(request):
 ###############################################################################
 # VIEW BY SECTOR
 
+@login_required(login_url="/login/")    
 def view_by_sector(request, id):
     globalsettings = Global_Settings.objects.all().latest('id')
     selected_sector = get_object_or_404(Sector, id=id)
@@ -117,6 +259,7 @@ def view_by_sector(request, id):
 ###############################################################################
 # VIEW BY STATUS
 
+@login_required(login_url="/login/")    
 def view_by_status(request, id):
     globalsettings = Global_Settings.objects.all().latest('id')
     selected_status = get_object_or_404(Status, id=id)
@@ -293,7 +436,7 @@ def adjust_worker(request):
     if setores_usuario:
         workers = Worker.objects.filter(sector_w__in=setores_usuario)
     else:
-        workers = Worker.objects.all().order_by('id')
+        workers = None
 
     status_list = Status.objects.all()
 
@@ -588,16 +731,16 @@ def import_workers_from_excel(request):
                 sub_sector_names = row['Subsetor'].split(", ")
                 sub_sectors = [Sub_Sector.objects.get_or_create(subSector_name=name)[0] for name in sub_sector_names]
 
-                status_names = row['Status'].split(", ")
-                statuses = [Status.objects.get_or_create(status_name=name)[0] for name in status_names]
+                # status_names = row['Status'].split(", ")
+                # statuses = [Status.objects.get_or_create(status_name=name)[0] for name in status_names]
 
-                observation_w = row['Observação']
+                # observation_w = row['Observação']
 
                 # Crie um objeto Worker e associe os objetos Position, Establishment, etc.
                 worker = Worker.objects.create(
                     number_w=number_w,
                     name_w=name_w,
-                    observation_w=observation_w,
+                    # observation_w=observation_w,
                 )
 
                 worker.position_w.set(positions)
@@ -605,7 +748,7 @@ def import_workers_from_excel(request):
                 worker.shift_w.set(shifts)
                 worker.sector_w.set(sectors)
                 worker.subSector_w.set(sub_sectors)
-                worker.status_w.set(statuses)
+                # worker.status_w.set(statuses)
 
                 # Atualize o progresso na sessão do usuário
                 request.session['progress'] = (index + 1) / total_rows * 100
@@ -842,6 +985,22 @@ def edit_preset(request, id):
     }
 
     return render(request, 'edit_preset.html', context)
+
+@staff_member_required(login_url='/login/')
+def update_header_width(request, preset_id, new_width):
+    if request.method == 'POST':
+        try:
+            preset_header = Preset_Header.objects.get(preset_id=preset_id)
+            preset_header.header_width = new_width
+            preset_header.save()
+            return JsonResponse({'message': 'Largura do header atualizada com sucesso!'})
+        except Preset_Header.DoesNotExist:
+            return JsonResponse({'message': 'Cabeçalho do preset não encontrado'}, status=404)
+        except Exception as e:
+            return JsonResponse({'message': f'Erro ao atualizar a largura do header: {str(e)}'}, status=500)
+
+    return JsonResponse({'message': 'Método de solicitação inválido.'}, status=400)
+
     
 @staff_member_required(login_url='/login/')
 def update_position(request, id):
@@ -879,6 +1038,8 @@ def auto_update_positions(request, id):
         preset_settings.sector_width = 4
         preset_settings.save()
         position += 1
+        preset_header, created = Preset_Header.objects.get_or_create(preset=preset)
+        preset_header.header_width = 9
         print(preset_settings.sector_id, '==>', preset_settings.sector_position)
 
     return redirect('dashboard_settings')  # Redireciona para a página de configurações do painel
@@ -909,12 +1070,18 @@ def update_positions(request, id):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)  # Decodifique os dados JSON
-            data = [int(sector_id) for sector_id in data]  # Converta os IDs para inteiros
-            for index, sector_id in enumerate(data):
-                preset_settings = Preset_Settings.objects.get(preset__id=id, sector__id=sector_id)
-                new_position = index + 1
+            print(f"Received data: {data}")  # Adicione um log para visualizar os dados recebidos
 
-                # Atualize a posição do setor usando F() expressions para evitar violar a restrição única
+            data = [int(sector_id) for sector_id in data if sector_id is not None]  # Filtrar valores None
+            print(f"Filtered data: {data}")  # Adicione um log após a filtragem
+
+            for index, sector_id in enumerate(data):
+                print(f"Processing sector ID: {sector_id}")  # Adicione um log para visualizar o ID do setor
+
+                preset_settings = Preset_Settings.objects.get(preset__id=id, sector__id=sector_id)
+                print(f"Found preset settings: {preset_settings}")  # Log dos settings encontrados
+
+                new_position = index + 1
                 Preset_Settings.objects.filter(preset__id=id, sector_position__gte=new_position).update(
                     sector_position=F('sector_position') + 1
                 )
@@ -930,19 +1097,24 @@ def update_positions(request, id):
     return JsonResponse({'message': 'Método de solicitação inválido.'}, status=400)
 
 
+
 @staff_member_required(login_url='/login/')
 def edit_layout(request, id):
     globalsettings = Global_Settings.objects.all().latest('id')
     preset = get_object_or_404(Dashboard_Presets, id=id)
     preset_id = preset.id
 
+    preset_header = Preset_Header.objects.get(preset=preset)  # Supondo que haja um campo 'preset' em Preset_Header que corresponda ao preset atual
+    header_width = preset_header.header_width  # Acessando header_width do objeto Preset_Header específico
+    print(header_width)
+
     
     # Acesse a relação ManyToMany com a tabela intermediária 'preset_sectors' e, em seguida, acesse o id
     preset_sectors = preset.preset_sectors.through.objects.filter(dashboard_presets_id=id)
 
-    print(preset_sectors)
+    # print(preset_sectors)
     if  preset_sectors:
-        print('preset contem setores')
+        # print('preset contem setores')
         # Crie uma lista para armazenar os valores que você deseja imprimir
         values_to_print = []
 
@@ -978,12 +1150,13 @@ def edit_layout(request, id):
             'values_to_print': values_to_print,
             'preset_sectors':preset_sectors,
             'preset_settings':preset_settings,
+            'header_width':header_width
         }
 
         return render(request, 'edit_layout.html', context)
     else:
-        print('preset nao contem setores')
-        print(preset_id)
+        # print('preset nao contem setores')
+        # print(preset_id)
         context = {
             'globalsettings':globalsettings,
             'preset_id':preset_id,
@@ -1134,28 +1307,53 @@ def new_user(request):
 ###############################################################################
 # AUTHENTICATION
 
+
 def login(request):
-    globalsettings = Global_Settings.objects.all().latest('id')
-    context={'globalsettings': globalsettings,}
-    if request.method == "GET":
-        return render(request, 'login.html', context)
+    if not Global_Settings.objects.exists():
+        return redirect('apply_defauts')
     else:
-        username = request.POST.get('username')
-        passwd = request.POST.get('passwd')
+        globalsettings = Global_Settings.objects.all().latest('id')
+        context = {'globalsettings': globalsettings}
 
-        user = authenticate(username=username, password=passwd)
+        if request.method == "GET":
+            print('method is get')
+            return render(request, 'login.html', context)
+        elif request.method == "POST":
+            print('method is post')
+            username = request.POST.get('username')
+            passwd = request.POST.get('passwd')
 
+            user = authenticate(username=username, password=passwd)
 
-        if user:
-            login_dj(request, user)
-            return redirect('dashboard')
-        else:
-            return render(request, 'login.html', context,  {'invalid_credentials': True})
+            if user:
+                print('will login')
+
+                login_dj(request, user)
+                return redirect('dashboard')
+            else:
+                print('will not login')
+                context['invalid_credentials'] = True
+                return render(request, 'login.html', context)
 
 @login_required(login_url="/login/")        
 def logout_view(request):
     logout(request)
     return redirect('login')
+
+
+###############################################################################
+# RESET WORKERS
+
+@staff_member_required(login_url='/login/')
+def reset(request):
+    workers = Worker.objects.all()
+    for worker in workers:
+        if worker.status_w is not None:
+            worker.status_w.set([])
+        worker.observation_w = ""
+        worker.save()
+        print("finalizado", worker.name_w) 
+    return redirect( 'dashboard')
 
 
 ###############################################################################
@@ -1166,7 +1364,20 @@ def view(request):
     globalsettings = Global_Settings.objects.all().latest('id')
 
 
+
     context = {
         'globalsettings':globalsettings,
     }
     return render(request, 'dashboard', context)
+
+def reset_all(request):
+    workers = Worker.objects.all()
+    print('STARTING WORKERS RESET')
+    
+    for worker in workers:
+        worker.status_w.set([])  # Define a lista vazia
+        worker.observation_w = ""  # Define a string vazia
+        worker.save()
+
+    print('WORKERS RESET COMPLETED')
+    return redirect('dashboard')

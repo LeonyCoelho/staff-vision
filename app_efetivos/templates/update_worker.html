@@ -308,7 +308,6 @@
 <script>
     function removeWorkerStatus(workerId) {
         console.log('Removendo status do trabalhador ID:', workerId);
-        if (confirm('Tem certeza que deseja remover o status deste colaborador?')) {
             $.ajax({
                 type: 'POST',
                 url: '/remove_worker_status/' + workerId + '/',
@@ -319,7 +318,6 @@
                 success: function (data) {
                     // Dentro do bloco 'success' do seu AJAX
                     if (data.success) {
-                        alert('Status removido com sucesso!');
                         var select = $('select[name="status_w_' + workerId + '"]');
                         select.val(null); // Remove a seleção atual
                         select.css('border-color', '#e5e5e5');
@@ -332,7 +330,6 @@
                     alert('Erro ao enviar requisição.');
                 }
             });
-        }
     }
 </script>
 
