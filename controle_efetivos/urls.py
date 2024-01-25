@@ -76,7 +76,11 @@ urlpatterns = [
     path('rename_status/', views.rename_status, name='rename_status'),
     path('change_status_color/', views.change_status_color, name='change_status_color'),
 
+<<<<<<< HEAD
     path('reset_all/', views.reset_all, name='reset_all'),
+=======
+    path('reset/', views.reset, name='reset'),
+>>>>>>> 30f4f925aadc4739c0673881ded798bd92a28b74
 ]
 
 

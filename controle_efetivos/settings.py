@@ -123,8 +123,13 @@ USE_I18N = True
 USE_TZ = True
 
 CRONJOBS = [
+<<<<<<< HEAD
     ('55 06 * * *', 'app_efetivos.cron.reset', '>> /home/deploy/controle-de-efetivo/logs/reset.log'),
     ('55 18 * * *', 'app_efetivos.cron.reset', '>> /home/deploy/controle-de-efetivo/logs/reset.log')
+=======
+    ('55 06 * * *', 'app_efetivo.cron.reset'),
+    ('55 18 * * *', 'app_efetivo.cron.reset')
+>>>>>>> 30f4f925aadc4739c0673881ded798bd92a28b74
 ]
 
 
