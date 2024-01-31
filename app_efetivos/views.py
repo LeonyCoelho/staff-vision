@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from app_efetivos.models import Establishment, Sector, Sub_Sector, Position, Shift, Global_Settings, Status, Theme, Worker, CustomUser, Dashboard_Presets, Preset_Settings, Preset_Header
+from app_efetivos.models import Establishment, Sector, Sub_Sector, Position, Shift, Global_Settings, Status, Theme, Worker, Worker_History, CustomUser, Dashboard_Presets, Preset_Settings, Preset_Header
 from .forms import EstablishmentForm, SectorForm, SubSectorForm, PositionForm, ShiftForm, StatusForm, ImageUploadForm, ImageUploadForm_Bg, PresetForm
 from django.contrib.auth.models import User
 from django.http import HttpResponse
@@ -11,6 +11,8 @@ from django.http import JsonResponse, HttpResponseRedirect
 from collections import defaultdict
 from django.urls import reverse
 from django.contrib import messages
+from django.utils import timezone
+
 import json
 
 from django.contrib.auth.decorators import login_required
@@ -667,6 +669,15 @@ def change_settings(request):
     return redirect('settings')
 
 @staff_member_required(login_url='/login/')
+def change_settings2(request):
+    if request.method == 'POST':
+        institution = request.POST.get('institution')
+        global_settings = Global_Settings.objects.all().latest('id')
+        global_settings.institution_name =  institution
+        global_settings.save()
+    return redirect('welcome3')
+
+@staff_member_required(login_url='/login/')
 def export_workers_to_excel(request):
     # Busque os objetos Worker do banco de dados
     workers = Worker.objects.all()
@@ -1307,33 +1318,62 @@ def new_user(request):
 ###############################################################################
 # AUTHENTICATION
 
-
 def login(request):
     if not Global_Settings.objects.exists():
         return redirect('apply_defauts')
     else:
-        globalsettings = Global_Settings.objects.all().latest('id')
-        context = {'globalsettings': globalsettings}
+        if not CustomUser.objects.exists():
+            return redirect('apply_defauts')
+        else:
+            globalsettings = Global_Settings.objects.all().latest('id')
+            context = {'globalsettings': globalsettings}
 
-        if request.method == "GET":
-            print('method is get')
-            return render(request, 'login.html', context)
-        elif request.method == "POST":
-            print('method is post')
-            username = request.POST.get('username')
-            passwd = request.POST.get('passwd')
-
-            user = authenticate(username=username, password=passwd)
-
-            if user:
-                print('will login')
-
-                login_dj(request, user)
-                return redirect('dashboard')
-            else:
-                print('will not login')
-                context['invalid_credentials'] = True
+            if request.method == "GET":
+                print('method is get')
                 return render(request, 'login.html', context)
+            elif request.method == "POST":
+                print('method is post')
+                username = request.POST.get('username')
+                passwd = request.POST.get('passwd')
+
+                user = authenticate(username=username, password=passwd)
+
+                if user:
+                    print('will login')
+
+                    login_dj(request, user)
+                    return redirect('dashboard')
+                else:
+                    print('will not login')
+                    context['invalid_credentials'] = True
+                    return render(request, 'login.html', context)
+
+# def login(request):
+#     if not Global_Settings.objects.exists():
+#         return redirect('apply_defauts')
+#     else:
+#         globalsettings = Global_Settings.objects.all().latest('id')
+#         context = {'globalsettings': globalsettings}
+
+#         if request.method == "GET":
+#             print('method is get')
+#             return render(request, 'login.html', context)
+#         elif request.method == "POST":
+#             print('method is post')
+#             username = request.POST.get('username')
+#             passwd = request.POST.get('passwd')
+
+#             user = authenticate(username=username, password=passwd)
+
+#             if user:
+#                 print('will login')
+
+#                 login_dj(request, user)
+#                 return redirect('dashboard')
+#             else:
+#                 print('will not login')
+#                 context['invalid_credentials'] = True
+#                 return render(request, 'login.html', context)
 
 @login_required(login_url="/login/")        
 def logout_view(request):
@@ -1373,11 +1413,35 @@ def view(request):
 def reset_all(request):
     workers = Worker.objects.all()
     print('STARTING WORKERS RESET')
-    
+
     for worker in workers:
+        # Salvar histórico antes de redefinir as informações
+        worker_history = Worker_History.objects.create(
+            id_worker_h=worker,
+            status_h=worker.status_w.last().status_name if worker.status_w.last() else None,
+            observation_h=worker.observation_w,
+            date_h=timezone.now()
+        )
+
+        # Redefinir as informações do trabalhador
         worker.status_w.set([])  # Define a lista vazia
-        worker.observation_w = ""  # Define a string vazia
+        worker.observation_w = ""  # Define uma string vazia
         worker.save()
 
     print('WORKERS RESET COMPLETED')
     return redirect('dashboard')
+
+
+def worker_history(request):
+    globalsettings = Global_Settings.objects.all().latest('id')
+    all_workers = Worker.objects.all()
+    # if request.method == 'POST':
+    #     worker_name = request.POST.get('worker_name')
+    #     worker = get_object_or_404(Worker, name_w=worker_name)
+    #     worker_history = Worker_History.objects.filter(id_worker_h=worker)
+    #     return render(request, 'worker_history.html', {'worker_history': worker_history, 'worker_name': worker_name})
+    context = {
+        'globalsettings':globalsettings,
+        'all_workers':all_workers
+        }
+    return render(request, 'worker_history.html', context)

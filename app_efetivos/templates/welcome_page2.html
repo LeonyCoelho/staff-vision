@@ -9,7 +9,7 @@
             Informações Basicas
         </div>
         <div class="card-body">
-            <form class="form-group" method="post" action="{% url 'change_settings' %}">
+            <form class="form-group" method="post" action="{% url 'change_settings2' %}">
                 {% csrf_token %}
                 <label>Nome da Empresa / Instituição</label>
                 <input class="form-control" name="institution" value="{{globalsettings.institution_name}}" required>

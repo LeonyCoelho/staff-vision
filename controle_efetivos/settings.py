@@ -14,9 +14,9 @@ SECRET_KEY = 'django-insecure-_3n5%s4u$6%xu+%y$usko%g4&01sbmvn%)jf-_pg-7p4hw+$v8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['10.42.68.2', '10.42.68.2:88']
+# ALLOWED_HOSTS = ['10.42.68.2', '10.42.68.2:88']
 
-CSRF_TRUSTED_ORIGINS = ['http://10.42.68.2:88']
+# CSRF_TRUSTED_ORIGINS = ['http://10.42.68.2:88']
 
 # ALLOWED_HOSTS = []
 
@@ -35,7 +35,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'app_efetivos',
     'django_crontab',
-    'channels'
+    'channels',
+    'bootstrap_datepicker_plus',
+
 ]
 
 MIDDLEWARE = [
@@ -74,16 +76,16 @@ WSGI_APPLICATION = 'controle_efetivos.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': BASE_DIR / 'db.sqlite3',
-#    }
-     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME':'controle_efetivosdb',
-        'USER': 'adm',
-        'PASSWORD':'abc@123',
-     }
+   'default': {
+       'ENGINE': 'django.db.backends.sqlite3',
+       'NAME': BASE_DIR / 'db.sqlite3',
+   }
+    #  'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME':'controle_efetivosdb',
+    #     'USER': 'adm',
+    #     'PASSWORD':'abc@123',
+    #  }
 }
 
 
@@ -123,13 +125,8 @@ USE_I18N = True
 USE_TZ = True
 
 CRONJOBS = [
-<<<<<<< HEAD
     ('55 06 * * *', 'app_efetivos.cron.reset', '>> /home/deploy/controle-de-efetivo/logs/reset.log'),
     ('55 18 * * *', 'app_efetivos.cron.reset', '>> /home/deploy/controle-de-efetivo/logs/reset.log')
-=======
-    ('55 06 * * *', 'app_efetivo.cron.reset'),
-    ('55 18 * * *', 'app_efetivo.cron.reset')
->>>>>>> 30f4f925aadc4739c0673881ded798bd92a28b74
 ]
 
 

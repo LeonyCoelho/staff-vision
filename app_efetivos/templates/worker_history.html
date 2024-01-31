@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+
+<title>CONTROLE DE EFETIVOS - CALENDARIO </title>
+<!-- CONSTRUA O TEMPLATE AQUI -->
+<div class="container d-flex justify-content-center align-items-center" style="height: calc(100vh - 100px);"> 
+    <div class="card custom-card">
+        <div class="card-body">
+
+            
+            <h2>Worker History</h2>
+
+            <label for="worker_search">Pesquisar por Nome:</label>
+            <input type="text" id="worker_search" oninput="filterWorkers()" placeholder="Digite o nome do trabalhador">
+        
+            <ul id="worker_list">
+                {% for worker in all_workers %}
+                    <li onclick="showWorkerHistory({{ worker.id_worker }}, '{{ worker.name_w }}')">{{ worker.name_w }}</li>
+                {% endfor %}
+            </ul>
+        
+            <h3>Histórico de <span id="selected_worker_name"></span></h3>
+            <ul id="worker_history_list">
+                <!-- Aqui será renderizado o histórico do trabalhador selecionado via JavaScript -->
+            </ul>
+        
+
+         </div>
+    </div>
+</div>
+
+<script>
+    // Lista de todos os trabalhadores
+    var allWorkers = {{ all_workers | safe }};
+
+    // Função para filtrar trabalhadores
+    function filterWorkers() {
+    var input = document.getElementById('worker_search');
+    var filter = input.value.toLowerCase();
+    var workerList = document.getElementById('worker_list');
+    var workerHistoryList = document.getElementById('worker_history_list');
+
+    // Limpar a lista de histórico e mostrar o nome do trabalhador selecionado
+    workerHistoryList.innerHTML = '';
+    document.getElementById('selected_worker_name').innerText = '';
+
+    // Iterar sobre os itens da lista
+    Array.from(workerList.children).forEach(function (listItem) {
+        var workerName = listItem.innerText.toLowerCase();
+
+        // Comparar o nome do trabalhador com o filtro
+        if (workerName.includes(filter)) {
+            listItem.style.display = 'block';
+        } else {
+            listItem.style.display = 'none';
+        }
+    });
+}
+
+    // Função para exibir o histórico do trabalhador selecionado
+    function showWorkerHistory(workerId, workerName) {
+        // Aqui você pode fazer uma requisição AJAX para obter o histórico do servidor
+        // Em vez disso, estou usando dados de exemplo para ilustrar o conceito
+        var workerHistory = [
+            { date_h: '2022-01-01', status_h: 'Status 1', observation_h: 'Observation 1' },
+            { date_h: '2022-01-02', status_h: 'Status 2', observation_h: 'Observation 2' },
+            // Adicione mais dados conforme necessário
+        ];
+
+        // Exibir o histórico do trabalhador selecionado
+        var workerHistoryList = document.getElementById('worker_history_list');
+        document.getElementById('selected_worker_name').innerText = workerName;
+
+        workerHistory.forEach(function(history) {
+            var listItem = document.createElement('li');
+            listItem.innerText = history.date_h + ' - ' + history.status_h + ' - ' + history.observation_h;
+            workerHistoryList.appendChild(listItem);
+        });
+    }
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+{% endblock %}

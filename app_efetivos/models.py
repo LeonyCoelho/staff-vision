@@ -89,7 +89,7 @@ class CustomUser(models.Model):
 
 ##########################################################################
 # WORKERS 
-
+    
 class Worker(models.Model):
     id_worker = models.AutoField(primary_key=True)
     number_w = models.IntegerField(default=0, null=True)
@@ -104,3 +104,12 @@ class Worker(models.Model):
 
     def __str__(self):
         return str(self.id_worker)
+    
+class Worker_History(models.Model):
+    id_worker_h = models.ForeignKey(Worker, on_delete=models.CASCADE)
+    status_h = models.CharField(max_length=124, null=True)
+    observation_h = models.CharField(max_length=124, null=True)
+    date_h = models.DateField(null=True)
+
+    def __str__(self):
+        return f"{self.id_worker_h} - {self.date_h}"

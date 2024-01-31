@@ -35,6 +35,7 @@ urlpatterns = [
 
 
     path('change_settings', views.change_settings, name='change_settings'),
+    path('change_settings2', views.change_settings2, name='change_settings2'),
     path('change_logo', views.change_logo, name='change_logo'),
     path('remove_logo', views.remove_logo, name='remove_logo'),
     path('change_bg', views.change_bg, name='change_bg'),
@@ -76,11 +77,8 @@ urlpatterns = [
     path('rename_status/', views.rename_status, name='rename_status'),
     path('change_status_color/', views.change_status_color, name='change_status_color'),
 
-<<<<<<< HEAD
     path('reset_all/', views.reset_all, name='reset_all'),
-=======
-    path('reset/', views.reset, name='reset'),
->>>>>>> 30f4f925aadc4739c0673881ded798bd92a28b74
+    path('worker_history/', views.worker_history, name='worker_history'),
 ]
 
 
