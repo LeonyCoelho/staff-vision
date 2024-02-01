@@ -78,7 +78,8 @@ urlpatterns = [
     path('change_status_color/', views.change_status_color, name='change_status_color'),
 
     path('reset_all/', views.reset_all, name='reset_all'),
-    path('worker_history/', views.worker_history, name='worker_history'),
+    path('history/', views.history, name='history'),
+    path('worker_history/<int:worker_id>/', views.worker_history, name='worker_history'),
 ]
 
 

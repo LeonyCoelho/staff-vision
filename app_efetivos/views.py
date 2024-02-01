@@ -1432,16 +1432,22 @@ def reset_all(request):
     return redirect('dashboard')
 
 
-def worker_history(request):
+def history(request):
     globalsettings = Global_Settings.objects.all().latest('id')
-    all_workers = Worker.objects.all()
-    # if request.method == 'POST':
-    #     worker_name = request.POST.get('worker_name')
-    #     worker = get_object_or_404(Worker, name_w=worker_name)
-    #     worker_history = Worker_History.objects.filter(id_worker_h=worker)
-    #     return render(request, 'worker_history.html', {'worker_history': worker_history, 'worker_name': worker_name})
+    workers = Worker.objects.all()
     context = {
         'globalsettings':globalsettings,
-        'all_workers':all_workers
+        'workers':workers,
+        }
+    return render(request, 'history.html', context)
+
+def worker_history(request, worker_id):
+    globalsettings = Global_Settings.objects.all().latest('id')
+    worker = get_object_or_404(Worker, id_worker=worker_id)
+    worker_history = Worker_History.objects.filter(id_worker_h=worker)
+    context = {
+        'globalsettings':globalsettings,
+        'worker_history': worker_history,
+        'worker_name': worker.name_w
         }
     return render(request, 'worker_history.html', context)

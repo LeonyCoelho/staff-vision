@@ -18,7 +18,7 @@ DEBUG = True
 
 # CSRF_TRUSTED_ORIGINS = ['http://10.42.68.2:88']
 
-# ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['192.168.0.22:8000', '192.168.0.22', '127.0.0.1:8000', 'localhost:8000']
 
 SESSION_COOKIE_NAME = 'session_controle_efetivos'
 
@@ -36,7 +36,6 @@ INSTALLED_APPS = [
     'app_efetivos',
     'django_crontab',
     'channels',
-    'bootstrap_datepicker_plus',
 
 ]
 

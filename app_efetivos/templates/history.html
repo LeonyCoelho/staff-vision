@@ -1,0 +1,301 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+
+<style>
+    div.fixed {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1099;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      padding: 15px 15px;
+      border-radius: 50%;
+      font-size: 1rem;
+      scroll-behavior: smooth;
+      transition: all 1s;
+
+    }
+
+    .svgtop {
+      fill: #FFFFFF;
+    }
+
+    .hide {
+      opacity: 0;
+      right: -100%
+    }
+
+    .show {
+      opacity: 1;
+      right: 0;
+    }
+  </style>
+
+<title>CONTROLE DE EFETIVOS - Atualizar Colaboradores</title>
+<!-- CONSTRUA O TEMPLATE AQUI -->
+<div class="container">
+    <div class="card custom-card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 d-flex justify-content-between align-items-center">
+                    Atualizar Colaboradores {% if is_mobile %} mobile {% endif %}      
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 d-flex justify-content-between align-items-center">
+                    <select id="filtro-setor" class="form-select" style="margin-left: 0rem; margin-bottom: 0px;">
+                        <option value="">Todos</option>
+                        {% for sector in setores_usuario %}
+                        <option value="{{ sector.sector_name }}">{{ sector.sector_name }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="text" id="campo-busca" class="form-control" style="margin-left: 1rem; margin-bottom: 0px;" placeholder="Buscar por nome">
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{% url 'update_worker' %}">
+                {% csrf_token %}
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover table-striped table-bordered" id="tabela-workers" style="margin-bottom: 0px;">
+                        <thead>
+                            <tr class="d-none d-md-table-row" style="white-space: nowrap">
+                                <th scope="col" hidden>ID</th>
+                                <th scope="col" style=" cursor: pointer; " class="sortable d-none d-md-table-cell" data-sort-direction="asc">Matricula <i class="nf nf-fa-caret_down"></i></i></th>
+                                <th scope="col" style=" cursor: pointer; " class="sortable d-none d-md-table-cell" data-sort-direction="asc">Nome <i class="nf nf-fa-caret_down"></i></i></th>
+                                <th scope="col" style=" cursor: pointer; " class="sortabled-none d-md-table-cell" data-sort-direction="asc">{{globalsettings.position_title}} <i class="nf nf-fa-caret_down"></i></i></th>
+                                <th scope="col" hidden style=" cursor: pointer; "  data-sort-direction="asc">{{globalsettings.sector_title}} <i class="nf nf-fa-caret_down"></i> </i></th>
+                                <th scope="col" style=" cursor: pointer; " class="sortabled-none d-md-table-cell" data-sort-direction="asc">{{globalsettings.establishment_title}} <i class="nf nf-fa-caret_down"></i></i></th>
+                                <th scope="col" style=" cursor: pointer; " class="sortabled-none d-md-table-cell" data-sort-direction="asc">{{globalsettings.shift_title}} <i class="nf nf-fa-caret_down"></i></i></th>
+                            </tr>
+                        </thead>
+                        
+                        <tbody>
+                            {% for worker in workers %}
+                            <tr style="cursor: pointer;">
+                                <td data-bs-toggle="modal" data-bs-target="#workerModal{{ worker.id_worker }}" hidden>{{ worker.id_worker }}</td>
+                                <td class="align-middle d-none d-md-table-cell" data-bs-toggle="modal" data-bs-target="#workerModal{{ worker.id_worker }}">
+                                    {% if worker.number_w %}
+                                        {{ worker.number_w|stringformat:'06d' }}
+                                    {% else %}
+                                        000000
+                                    {% endif %}
+                                </td>
+                                <td class="align-middle d-flex flex-column d-md-table-cell " style="font-weight: bold;" data-bs-toggle="modal" data-bs-target="#workerModal{{ worker.id_worker }}">{{ worker.name_w.split.0 }} {{ worker.name_w.split|last }}</td>
+                                <td class="align-middle d-none d-md-table-cell" data-bs-toggle="modal" data-bs-target="#workerModal{{ worker.id_worker }}">
+                                    {% for position in worker.position_w.all %}
+                                        {{ position.position_name|truncatechars:30|default:"..." }} 
+                                    {% empty %}
+                                        N/A
+                                    {% endfor %}
+                                </td>
+                                <td hidden>{{ worker.sector_w.first.sector_name }}</td>
+                                <td class="align-middle d-none d-md-table-cell" data-bs-toggle="modal" data-bs-target="#workerModal{{ worker.id_worker }}">
+                                    {% for establishment in worker.establishment_w.all %}
+                                        {{ establishment.establishment_name }}
+                                    {% empty %}
+                                        N/A
+                                    {% endfor %}
+                                </td>
+                                <td class="align-middle d-none d-md-table-cell" data-bs-toggle="modal" data-bs-target="#workerModal{{ worker.id_worker }}">
+                                    {% for shift in worker.shift_w.all %}
+                                        {{ shift.shift_name }}
+                                    {% empty %}
+                                        N/A
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4">Nenhum usuário encontrado.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer">
+                <button type="submit" class="btn btn-primary customBtn">Atualizar</button>
+            </div>
+        </form>
+    </div>     
+</div>
+
+<!-- Modal -->
+{% for worker in workers %}
+<div class="modal fade" id="workerModal{{ worker.id_worker }}" tabindex="-1" aria-labelledby="workerModalLabel{{ worker.id_worker }}" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content card painel-card">
+      <div class="modal-header">
+        <h5 class="modal-title" id="workerModalLabel{{ worker.id_worker }}">Informações do Colaborador</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>
+      <div class="modal-body">
+        <p>{{ worker.number_w }} - {{ worker.name_w }}</p>
+        <a href="{% url 'worker_history' worker.id_worker %}" class="btn btn-primary">Ver Histórico</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endfor %}
+
+<div onclick="topFunction()" id="backtotop" class="bg-primary fixed hide">
+    <svg class="svgtop" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+      <path fill="none" d="M0 0h24v24H0V0z" />
+      <path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z" />
+    </svg>
+  </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const selectSector = document.getElementById("filtro-setor");
+        const campoBusca = document.getElementById("campo-busca");
+        const tabelaWorkers = document.getElementById("tabela-workers").getElementsByTagName("tbody")[0];
+        const workers = tabelaWorkers.getElementsByTagName("tr");
+
+        selectSector.addEventListener("change", function() {
+            filterWorkers();
+        });
+
+        campoBusca.addEventListener("input", function() {
+            filterWorkers();
+        });
+
+        function filterWorkers() {
+            const selectedSector = selectSector.value.toLowerCase();
+            const searchTerm = campoBusca.value.toLowerCase();
+
+            for (let i = 0; i < workers.length; i++) {
+                const worker = workers[i];
+                const workerSector = worker.querySelector("td:nth-child(5)").textContent.trim().toLowerCase(); // Ajuste o índice conforme necessário
+                const workerName = worker.querySelector("td:nth-child(3)").textContent.trim().toLowerCase(); // Ajuste o índice conforme necessário
+
+                if ((selectedSector === "" || workerSector === selectedSector) &&
+                    (searchTerm === "" || workerName.includes(searchTerm))) {
+                    worker.style.display = "";
+                } else {
+                    worker.style.display = "none";
+                }
+            }
+        }
+
+        // Disparar o evento 'change' para exibir todos os trabalhadores inicialmente
+        selectSector.dispatchEvent(new Event('change'));
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const tabelaWorkers = document.getElementById("tabela-workers");
+        const tableBody = tabelaWorkers.querySelector("tbody");
+        const tableHeaders = tabelaWorkers.querySelectorAll("th");
+        const rows = Array.from(tableBody.rows);
+
+        tableHeaders.forEach(header => {
+            header.addEventListener("click", () => {
+                const columnIndex = header.cellIndex;
+                const sortDirection = header.getAttribute("data-sort-direction") || "asc";
+
+                const dataRows = rows.slice(); // Exclui a primeira linha (linha de cabeçalho)
+
+                dataRows.sort((a, b) => {
+                    const cellA = a.cells[columnIndex].textContent.trim();
+                    const cellB = b.cells[columnIndex].textContent.trim();
+                    
+                    const numA = parseFloat(cellA);
+                    const numB = parseFloat(cellB);
+                    
+                    if (!isNaN(numA) && !isNaN(numB)) {
+                        return numA - numB;
+                    } else {
+                        return cellA.localeCompare(cellB);
+                    }
+                });
+
+                // Limpa a tabela
+                while (tableBody.rows.length > 0) {
+                    tableBody.deleteRow(0);
+                }
+
+                // Adiciona as linhas classificadas de volta à tabela
+                dataRows.forEach(row => {
+                    tableBody.appendChild(row);
+                });
+
+                // Remove a classe "bi-arrow-up" ou "bi-arrow-down" de todas as setas
+                tableHeaders.forEach(th => {
+                    th.querySelector("i").classList.remove("bi-arrow-up", "bi-arrow-down");
+                    th.removeAttribute("data-sort-direction");
+                });
+
+                // Define a classe da seta e o atributo data-sort-direction no cabeçalho clicado
+                header.querySelector("i").classList.add(sortDirection === "asc" ? "bi-arrow-up" : "bi-arrow-down");
+                header.setAttribute("data-sort-direction", sortDirection === "asc" ? "desc" : "asc");
+            });
+        });
+    });
+</script>
+<script>
+    // Detecta o dispositivo móvel
+    var is_mobile = window.innerWidth <= 768; // Defina o valor apropriado para o ponto de corte entre celular e desktop
+</script>
+
+
+
+<script>
+    backtotop = document.getElementById("backtotop");
+
+    var ScrollFunc = function () {
+      var y = window.scrollY;
+      if (y >= 400) {
+        backtotop.className = "bg-primary fixed show"
+      } else {
+        backtotop.className = "bg-primary fixed hide"
+      }
+    };
+
+    window.addEventListener("scroll", ScrollFunc);
+
+    function topFunction() {
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+    }
+  </script>
+
+
+<script>
+    function removeWorkerStatus(workerId) {
+        console.log('Removendo status do trabalhador ID:', workerId);
+            $.ajax({
+                type: 'POST',
+                url: '/remove_worker_status/' + workerId + '/',
+                dataType: 'json',
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+                },
+                success: function (data) {
+                    // Dentro do bloco 'success' do seu AJAX
+                    if (data.success) {
+                        var select = $('select[name="status_w_' + workerId + '"]');
+                        select.val(null); // Remove a seleção atual
+                        select.css('border-color', '#e5e5e5');
+                    } else {
+                        alert('Falha ao remover o status do colaborador.');
+                    }
+
+                },
+                error: function () {
+                    alert('Erro ao enviar requisição.');
+                }
+            });
+    }
+</script>
+
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+{% endblock %}
