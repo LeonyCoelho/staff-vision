@@ -108,6 +108,7 @@ class Worker(models.Model):
 class Worker_History(models.Model):
     id_worker_h = models.ForeignKey(Worker, on_delete=models.CASCADE)
     status_h = models.CharField(max_length=124, null=True)
+    status_color_h = models.CharField(max_length=50, default="#a5a5a5")
     observation_h = models.CharField(max_length=124, null=True)
     date_h = models.DateField(null=True)
 
