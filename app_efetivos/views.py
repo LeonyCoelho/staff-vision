@@ -1445,12 +1445,19 @@ def history(request):
 def worker_history(request, worker_id):
     globalsettings = Global_Settings.objects.all().latest('id')
     worker = get_object_or_404(Worker, id_worker=worker_id)
-    worker_history = Worker_History.objects.order_by('-id').filter(id_worker_h=worker)
-    statuses=Status.objects.all()
+    worker_history_queryset = Worker_History.objects.order_by('-id').filter(id_worker_h=worker)
+    statuses = Status.objects.all()
+
+    # Convertendo o QuerySet para uma lista Python
+    worker_history_list = list(worker_history_queryset)
+
+    print(worker_history_queryset)
+
     context = {
-        'globalsettings':globalsettings,
-        'worker_history': worker_history,
+        'globalsettings': globalsettings,
+        'worker_history': worker_history_list,
+        'worker_history_queryset': worker_history_queryset,
         'worker_name': worker.name_w,
-        'statuses':statuses,
-        }
+        'statuses': statuses,
+    }
     return render(request, 'worker_history.html', context)

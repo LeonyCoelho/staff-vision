@@ -38,53 +38,62 @@
                     <label for="endDate">Data de Término:</label>
                     <input type="date" id="endDate">
 
-                    <button onclick="applyFilters()">Aplicar Filtros</button>
+                    <button id="applyFiltersButton">Aplicar Filtros</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<script>
-    function applyFilters() {
-        var allWorkerHistory = {{ worker_history | safe }};
-        var filteredHistory = allWorkerHistory.slice();
-
-        var statusFilter = $('#statusFilter').val();
-        var startDate = $('#startDate').val();
-        var endDate = $('#endDate').val();
-
-        filteredHistory = allWorkerHistory.filter(function(entry) {
-            return (statusFilter === '' || entry.status_h === statusFilter);
-        });
-
-        filteredHistory = filteredHistory.filter(function(entry) {
-            return (startDate === '' || entry.date_h >= startDate) &&
-                (endDate === '' || entry.date_h <= endDate);
-        });
-
-        renderWorkerHistory(filteredHistory);
-    }
-
-    function renderWorkerHistory(history) {
-        var workerHistoryList = $('#workerHistoryList');
-        workerHistoryList.empty();
-
-        history.forEach(function(entry) {
-            var listItem = $('<li class="list-group-item d-flex justify-content-between align-items-start">' +
-                '<div class="ms-2 me-auto">' +
-                '<div class="fw-bold">' + entry.date_h + '</div>' +
-                entry.observation_h +
-                '</div>' +
-                '<span class="badge rounded-pill" style="background-color: ' + entry.status_color_h + ';">' + entry.status_h + '</span>' +
-                '</li>');
-
-            workerHistoryList.append(listItem);
-        });
-    }
-</script>
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+<!-- Seu template Django - worker_history.html -->
+
+<script>
+    $(document).ready(function() {
+        $('#applyFiltersButton').on('click', function() {
+            applyFilters();
+        });
+
+        function applyFilters() {
+            var allWorkerHistory = {{ worker_history_queryset.id|safe }};
+            var filteredHistory = allWorkerHistory.slice();
+
+            var statusFilter = $('#statusFilter').val();
+            var startDate = $('#startDate').val();
+            var endDate = $('#endDate').val();
+
+            filteredHistory = allWorkerHistory.filter(function(entry) {
+                return (statusFilter === '' || entry.status_h === statusFilter);
+            });
+
+            filteredHistory = filteredHistory.filter(function(entry) {
+                return (startDate === '' || entry.date_h >= startDate) &&
+                    (endDate === '' || entry.date_h <= endDate);
+            });
+
+            renderWorkerHistory(filteredHistory);
+        }
+
+        function renderWorkerHistory(history) {
+            var workerHistoryList = $('#workerHistoryList');
+            workerHistoryList.empty();
+
+            history.forEach(function(entry) {
+                var listItem = $('<li class="list-group-item d-flex justify-content-between align-items-start">' +
+                    '<div class="ms-2 me-auto">' +
+                    '<div class="fw-bold">' + entry.date_h + '</div>' +
+                    entry.observation_h +
+                    '</div>' +
+                    '<span class="badge rounded-pill" style="background-color: ' + entry.status_color_h + ';">' + entry.status_h + '</span>' +
+                    '</li>');
+
+                workerHistoryList.append(listItem);
+            });
+        }
+    });
+</script>
+
 
 {% endblock %}
