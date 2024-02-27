@@ -18,8 +18,12 @@ DEBUG = True
 
 # CSRF_TRUSTED_ORIGINS = ['http://10.42.68.2:88']
 
+<<<<<<< HEAD
 # ALLOWED_HOSTS = ['192.168.0.22:8000', '192.168.0.22', '127.0.0.1:8000', 'localhost:8000']
 ALLOWED_HOSTS = ['*']
+=======
+ALLOWED_HOSTS = ['192.168.0.22:8000', '192.168.0.22', '127.0.0.1:8000', '127.0.0.1', 'localhost:8000']
+>>>>>>> 965040a0a92cb6ee3997fe09ef71287b14dce4f1
 
 SESSION_COOKIE_NAME = 'session_controle_efetivos'
 

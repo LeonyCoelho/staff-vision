@@ -1419,6 +1419,7 @@ def reset_all(request):
         worker_history = Worker_History.objects.create(
             id_worker_h=worker,
             status_h=worker.status_w.last().status_name if worker.status_w.last() else None,
+            status_color_h =worker.status_w.last().status_color if worker.status_w.last() else None,
             observation_h=worker.observation_w,
             date_h=timezone.now()
         )
@@ -1444,10 +1445,19 @@ def history(request):
 def worker_history(request, worker_id):
     globalsettings = Global_Settings.objects.all().latest('id')
     worker = get_object_or_404(Worker, id_worker=worker_id)
-    worker_history = Worker_History.objects.filter(id_worker_h=worker)
+    worker_history_queryset = Worker_History.objects.order_by('-id').filter(id_worker_h=worker)
+    statuses = Status.objects.all()
+
+    # Convertendo o QuerySet para uma lista Python
+    worker_history_list = list(worker_history_queryset)
+
+    print(worker_history_queryset)
+
     context = {
-        'globalsettings':globalsettings,
-        'worker_history': worker_history,
-        'worker_name': worker.name_w
-        }
+        'globalsettings': globalsettings,
+        'worker_history': worker_history_list,
+        'worker_history_queryset': worker_history_queryset,
+        'worker_name': worker.name_w,
+        'statuses': statuses,
+    }
     return render(request, 'worker_history.html', context)
