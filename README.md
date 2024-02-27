@@ -1,2 +1,12 @@
-# controle-de-efetivo
-Ferramenta para gerenciar e acompanhar efetivo de funcionários.
+
+# Staff Vision
+
+Staff Vision é uma ferramenta administrativa desenvolvida para gerenciar e acompanhar efetivos dos colaboradores de uma empresa.
+
+
+## Features
+
+- Dashboard altamente customizavel
+- Dois temas disponiveis
+- Importação e exportação de dados via arquivos CSV
+- Setup simplificado(após o deploy do webserver)
