@@ -11,6 +11,6 @@ Staff Vision é uma ferramenta administrativa desenvolvida para gerenciar e acom
 - Importação e exportação de dados via arquivos CSV
 - Setup simplificado(após o deploy do webserver)
 
-  ## Planos futuros
+## Planos futuros
 
-  - Tradução para a lingua inglesa
+- Tradução para a lingua inglesa
