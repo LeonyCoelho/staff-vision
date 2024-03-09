@@ -13,4 +13,5 @@ Staff Vision é uma ferramenta administrativa desenvolvida para gerenciar e acom
 
 ## Planos futuros
 
+- Script para automatizar o deploy
 - Tradução para a lingua inglesa
