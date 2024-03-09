@@ -14,16 +14,7 @@ SECRET_KEY = 'django-insecure-_3n5%s4u$6%xu+%y$usko%g4&01sbmvn%)jf-_pg-7p4hw+$v8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# ALLOWED_HOSTS = ['10.42.68.2', '10.42.68.2:88']
-
-# CSRF_TRUSTED_ORIGINS = ['http://10.42.68.2:88']
-
-<<<<<<< HEAD
-# ALLOWED_HOSTS = ['192.168.0.22:8000', '192.168.0.22', '127.0.0.1:8000', 'localhost:8000']
 ALLOWED_HOSTS = ['*']
-=======
-ALLOWED_HOSTS = ['192.168.0.22:8000', '192.168.0.22', '127.0.0.1:8000', '127.0.0.1', 'localhost:8000']
->>>>>>> 965040a0a92cb6ee3997fe09ef71287b14dce4f1
 
 SESSION_COOKIE_NAME = 'session_controle_efetivos'
 
