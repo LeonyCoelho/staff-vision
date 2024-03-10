@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+
+<title>Staff Vision - BEM VINDO</title>
+<!-- CONSTRUA O TEMPLATE AQUI -->
+<div class="container">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            Selecione um plano de fundo 
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data" class="form-group" action="{% url 'change_bg' %}">
+                {% csrf_token %}
+                {{ bg_form.as_table }}
+                <button type="submit" class="btn btn-primary">Finalizar</button>
+                <a class="btn btn-secondary" href="{% url 'settings' %}">Pular</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

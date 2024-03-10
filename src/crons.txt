@@ -1,5 +1,5 @@
-00 19 * * * /home/leony/Documents/Enviroments/efetivo-env/bin/python /home/leony/Documents/Repo/efetivo/manage.py runcrons >> /home/leony/Documents/Repo/efetivo/logfile.log 2>&1
+00 19 * * * /home/leony/Documents/Enviroments/staff_vision-env/bin/python /home/leony/Documents/Repo/staff_vision/manage.py runcrons >> /home/leony/Documents/Repo/staff_vision/logfile.log 2>&1
 
-00 07 * * * /home/leony/Documents/Enviroments/efetivo-env/bin/python /home/leony/Documents/Repo/efetivo/manage.py runcrons >> /home/leony/Documents/Repo/efetivo/logfile.log 2>&1
+00 07 * * * /home/leony/Documents/Enviroments/staff_vision-env/bin/python /home/leony/Documents/Repo/staff_vision/manage.py runcrons >> /home/leony/Documents/Repo/staff_vision/logfile.log 2>&1
 
 

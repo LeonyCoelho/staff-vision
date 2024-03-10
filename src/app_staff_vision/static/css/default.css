@@ -1,0 +1,73 @@
+/* @import "https://www.nerdfonts.com/assets/css/webfont.css"; */
+
+@font-face {
+    font-family: 'FontAwesome';
+    src: url('fonts/fontawesome-webfont.eot?v=4.7.0');
+  }
+
+body{
+    background-color: rgb(220, 227, 245);
+}
+
+.customNavbar{
+    color: rgba(0, 0, 0, 0.9);
+    background-color: #fff !important;
+}
+
+.nav-link{
+    color: rgba(0, 0, 0, 0.9);
+}
+
+.card-header{
+    text-transform: uppercase;
+}
+
+.list-group{
+    border-radius: 0px;
+}
+
+/* ================================= THEMING ================================ */
+
+.btn-primary{
+    /* background-color: blueviolet; */
+    border-color: rgba(0, 0, 0, 0.247);
+}
+
+/* =============================== SETTINGS ============================= */
+
+.establishment-settings-box{
+    overflow-x: hidden;
+    overflow-y: scroll;
+    height: 300px;
+}
+.sector-settings-box{
+    overflow-x: hidden;
+    overflow-y: scroll;
+    height: 300px;
+}
+.subSector-settings-box{
+    overflow-x: hidden;
+    overflow-y: scroll;
+    height: 300px;
+}
+.shift-settings-box{
+    overflow-x: hidden;
+    overflow-y: scroll;
+    height: 300px;
+}
+.position-settings-box{
+    overflow-x: hidden;
+    overflow-y: scroll;
+    height: 300px;
+}
+.status-settings-box{
+    overflow-x: hidden;
+    overflow-y: scroll;
+    height: 300px;
+}
+
+/* =========================== NEW USER=================================== */
+
+.new-user-box{
+    height: 700px;
+}

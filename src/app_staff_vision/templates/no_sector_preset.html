@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+
+<title>Staff Vision - Sem setor no preset</title>
+<!-- CONSTRUA O TEMPLATE AQUI -->
+<div class="container d-flex justify-content-center align-items-center" style="height: calc(100vh - 100px);"> 
+    <div class="card custom-card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-8">
+                    <h1 class="display-2">Preset sem {{globalsettings.sector_title}}</h1>
+                    <p class="h2">Você deve adicionar ao menos um {{globalsettings.sector_title}} ao preset.</p>
+                    <a class="btn btn-primary text-end" href="{% url 'edit_preset' preset_id %}">Editar Preset</a>
+                </div>
+                <div class="col-4 d-flex justify-content-center align-items-center">
+                    <h1 class="display-1"><i class="nf nf-oct-alert"></i></h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

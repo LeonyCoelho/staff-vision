@@ -1,0 +1,77 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Leony Ferreira Coelho">
+    <title>Staff Vision - Login</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/sign-in/">
+
+    
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static  'css/bootstrap.min.css'  %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static  globalsettings.theme.first.theme_url  %}"  />
+    <link rel="stylesheet" type="text/css" href="{% static  'css/login.css' %}"  />
+    <!-- Favicons -->
+<meta name="theme-color" content="#7952b3">
+
+
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+
+    
+    <!-- Custom styles for this template -->
+    <!-- <link href="signin.css" rel="stylesheet"> -->
+  </head>
+  {% if globalsettings.bg_image %}
+  <body style="background-image: url('{{ globalsettings.bg_image.url }}'); background-size: cover; background-repeat: no-repeat;background-attachment: fixed;" class="d-flex flex-column h-100">
+  {% else %}
+  <body class="d-flex flex-column h-100">
+  {% endif %}
+
+    
+<main class="form-signin login-box">
+  <form class="from-group" action="{% url 'login' %}" method="POST">{% csrf_token %}
+    <div class="text-center">
+      {% if globalsettings.logo_image %}
+      <img src="{{ globalsettings.logo_image.url }}" alt="Logo" width="80%" class="mb-3">
+      {% else %}
+      <img src="{% static 'img/logo-square.png' %}" alt="Logo" width="80%" class="mb-3">
+      {% endif %}
+      <h1 class="h3 mb-3 fw-normal login-text">Entrar com credenciais</h1>
+      
+      <div class="form-floating">
+        <input type="text" class="form-control" name="username" id="floatingInput" placeholder="name@example.com">
+        <label for="floatingInput" class=" login-input">Nome de usuário</label>
+      </div>
+      <div class="form-floating">
+        <input type="password" class="form-control" name="passwd" id="floatingPassword" placeholder="Password">
+        <label for="floatingPassword" class=" login-input">Senha</label>
+      </div>
+      <button class="w-100 btn btn-lg btn-primary login-text" type="submit">Acessar</button>
+      <p class="mt-5 text-muted">Staff Vision&copy; - 2023 - 2024</p>
+      <p class="text-muted">Desenvolvido por Leony Coelho</p>
+    </div>
+  </form>
+</main>
+
+
+    
+  </body>
+</html>

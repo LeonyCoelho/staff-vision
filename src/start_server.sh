@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Ative o ambiente virtual
-source /home/deploy/env-controle-de-efetivo/bin/activate
+source /home/deploy/env-staff_vision/bin/activate
 
 # Inicie o Gunicorn
-gunicorn --config /home/deploy/controle-de-efetivo/conf/gunicorn_config.py --chdir /home/deploy/controle-de-efetivo/ controle_efetivos.wsgi:application --workers=2 --threads=2 --worker-class=gthread
+gunicorn --config /home/deploy/staff_vision/conf/gunicorn_config.py --chdir /home/deploy/staff_vision/ staff_vision.wsgi:application --workers=2 --threads=2 --worker-class=gthread
 

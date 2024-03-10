@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+{% load static %}
+
+<title>Staff Vision - Novo Usuário</title>
+<!-- CONSTRUA O TEMPLATE AQUI -->
+
+
+<div class="container">
+<div class="card custom-card mb-3">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        Novo Usuário
+    </div>
+    <div class="card-body">
+        {% if user_exists %}
+        <div class="invalid-credentials">
+            <h6 class="painel-lista-title">Este usuário já existe</h6>
+        </div>
+        {% endif %}
+        {% if wrong_password %}
+        <div class="invalid-credentials">
+            <h6 class="painel-lista-title">As senhas informadas não conferem</h6>
+        </div>
+        {% endif %}
+        <form class="from-group" action="{% url 'new_user' %}" method="POST">
+            {% csrf_token %}
+            <div class="customForm">
+                <div class="row">
+                    <div class="col-6">
+                        <input class="form-control mb-3" type="text" placeholder="Nome Completo" name="name" autofocus >
+                    </div>
+                    <div class="col-6">
+                        <input class="form-control mb-3" type="text" placeholder="Login" name="username">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <input class="col-6 form-control mb-3" type="password" placeholder="Senha" name="password">
+                    </div>
+                    <div class="col-6">
+                        <input class="col-6 form-control mb-3" type="password" placeholder="Confirmar Senha" name="confirm_password">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <label>Administrador</label>
+                        <input type="checkbox" name="is_staff" value="1">
+                    </div>
+                    <div class="col-6"></div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <label>{{ globalsettings.sector_title }}</label>
+                        <ul class="list-group" id="preset-list">
+                            <div class="row">
+                                {% for sector in sectors_list %}
+                                <li class="list-group-item col-6" style="border: 0px; background-color: transparent;">
+                                    <div class="form-check form-switch d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <input class="form-check-input" type="checkbox" role="switch" name="selected_items_sector" value="{{ sector.id }}"
+                                                {% if sector in preset.preset_sectors.all %} checked {% endif %}>
+                                            <label class="form-check-label">
+                                                {{ sector.id }} - {{ sector.sector_name }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                </li>
+                                {% endfor %}
+                            </div>
+                        </ul>                        
+                        <button type="submit" class="btn btn-danger mt-2">Salvar</button>
+                    </div>
+                </div>                    
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+
+{% endblock %}

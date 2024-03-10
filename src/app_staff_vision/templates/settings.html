@@ -1,0 +1,846 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+{% load static %}
+
+    <title>Staff Vision - Configurações Gerais</title>
+
+    <div class="container">
+        <h3 class="mb-3">Configurações</h3>
+        <div class="row" data-masonry='{"percentPosition": true }'>
+            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        Configurações Globais         
+                    </div>
+                    <div class="card-body">
+                        <form class="form-group" method="post" action="{% url 'change_settings' %}">
+                            {% csrf_token %}
+                            <label>Nome da Empresa / Instituição</label>
+                            <input class="form-control mb-3" name="institution" value="{{globalsettings.institution_name}}">
+                            <label>Selecione o tema</label>
+                            <select class="form-select mb-3" name="theme">
+                                <option selected hidden>{{globalsettings.theme.first.theme_name}}</option>
+                                {% for Theme in theme_list %}
+                                <option>{{Theme.theme_name}}</option>
+                                {% endfor %}
+                            </select>
+                            <button class="btn btn-primary" type="submit">Aplicar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        Alterar Logo          
+                    </div>
+                    <div class="card-body">
+                        {% if globalsettings.logo_image %}
+                        <img src="{{ globalsettings.logo_image.url }}" alt="Logo" height="100px">
+                        {% else %}
+                        <img src="{% static 'img/logo.png' %}" alt="Logo" height="100px">
+                      {% endif %}
+                        <form method="post" enctype="multipart/form-data" class="form-group" action="{% url 'change_logo' %}">
+                            {% csrf_token %}
+                            {{ logo_form.as_table }}
+                            <button type="submit" class="btn btn-primary">Enviar</button>
+                            <a href="{% url 'remove_logo' %}" class="btn btn-danger">Remover</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        Alterar Plano de Fundo        
+                    </div>
+                    <div class="card-body">
+                        {% if globalsettings.bg_image %}
+                        <img src="{{ globalsettings.bg_image.url }}" alt="BG" height="100px">
+                        {% else %}
+                        <img src="{% static 'img/bg.png' %}" alt="BG" height="100px">
+                      {% endif %}
+                        <form method="post" enctype="multipart/form-data" class="form-group" action="{% url 'change_bg' %}">
+                            {% csrf_token %}
+                            {{ bg_form.as_table }}
+                            <button type="submit" class="btn btn-primary">Enviar</button>
+                            <a href="{% url 'remove_bg' %}" class="btn btn-danger">Remover</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        Importar Funcionarios          
+                    </div>
+                    <div class="card-body">
+                        <form method="post" enctype="multipart/form-data" class="custom-upload-form" action="{% url 'import_workers_from_excel' %}">
+                            {% csrf_token %}
+                            {{ form.excel_file }}
+                            <button type="submit" class="btn btn-primary">Enviar</button>
+                            <a href="{% url 'export_workers_to_excel' %}" class="btn btn-success">Exportar</a>
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#remove-all-workers-modal">
+                                Remover
+                              </button>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Modal -->
+                <div class="modal fade" id="remove-all-workers-modal" tabindex="-1" aria-labelledby="remove-all-workers-modalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="remove-all-workers-modalLabel">Atenção</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                Deseja remover todos os colaboradores?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <form method="post" action="{% url 'remove_all_workers' %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger" >Confirmar</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <h3 class="mb-3">Atribuições</h3>
+        <div class="row">
+            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                <!-- ESTABLISHMENT ------------------------------------------------------------------------------------------------------------------------>
+                <div class="card mb-4">
+                    <div class="card-header custom-card-header d-flex justify-content-between align-items-center">
+                        {{globalsettings.establishment_title}}
+
+                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#rename_establishment">
+                            <span><i class="nf nf-md-rename_box"></i></span>
+                        </button>          
+                    </div>
+                    <div class="card-body">
+
+
+
+                        <form method="post" class="form-inline" id="establishment-form">
+                            <div class="input-group">
+                                {% csrf_token %}
+                                {{ establishment_form.establishment_name }}
+                                <button class="btn btn-primary form-button" type="submit"><span><i class="nf nf-oct-diff_added"></i></span></button>
+                            </div>
+                        </form>
+
+                        <div class="establishment-settings-box">
+                            <form method="post" id="delete-selected-establishment-form">
+                                {% csrf_token %}
+                                <ul class="list-group" id="establishment-list">
+                                    {% for Establishment in establishment_list %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="selected_items_establishment" value="{{ Establishment.id }}">
+                                            <label class="form-check-label">
+                                                {{ Establishment.establishment_name }}
+                                            </label>
+                                        </div> 
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <button type="button" id="delete-selected-establishment-button" class="btn btn-danger mt-2">   Remover</button>
+                        </form>
+
+                    </div>                    
+                </div>
+                <div class="modal fade" id="rename_establishment" tabindex="-1" aria-labelledby="rename_establishmentLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="rename_establishmentLabel">Renomear Estabelecimento</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form method="post" action="{% url 'rename_establishment' %}">
+                                    {% csrf_token %}
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" id="new_establishment_name" name="new_establishment_name" value="{{ globalsettings.establishment_title }}">
+                                        </div>
+                                    </div>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                        <button type="submit" class="btn btn-primary">Salvar alterações</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                <!-- SECTOR ------------------------------------------------------------------------------------------------------------------------>
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        {{globalsettings.sector_title}}
+
+                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#rename_sector">
+                            <span><i class="nf nf-md-rename_box"></i></span>
+                        </button>          
+                    </div>
+                    <div class="card-body">
+
+
+                        <form method="post" class="form-inline" id="sector-form">
+                            <div class="input-group">
+                                {% csrf_token %}
+                                {{ sector_form.sector_name }}
+                                <button class="btn btn-primary form-button" type="submit"><span><i class="nf nf-oct-diff_added"></i></span></button>
+                            </div>
+                        </form>
+
+                        <div class="sector-settings-box">
+                            <form method="post" id="delete-selected-sector-form">
+                                {% csrf_token %}
+                                <ul class="list-group" id="sector-list">
+                                    {% for Sector in sectors_list %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="selected_items_sector" value="{{ Sector.id }}">
+                                            <label class="form-check-label">
+                                                {{ Sector.sector_name }}
+                                            </label>
+                                        </div>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <button type="button" id="delete-selected-sector-button" class="btn btn-danger mt-2"> Remover</button>
+                        </form>
+
+                    </div>                    
+                </div>
+                <div class="modal fade" id="rename_sector" tabindex="-1" aria-labelledby="rename_sectorLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="rename_sectorLabel">Renomear Estabelecimento</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form method="post" action="{% url 'rename_sector' %}">
+                                    {% csrf_token %}
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" id="new_sector_name" name="new_sector_name" value="{{ globalsettings.sector_title }}">
+                                        </div>
+                                    </div>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                        <button type="submit" class="btn btn-primary">Salvar alterações</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                <!-- SUBSETOR ------------------------------------------------------------------------------------------------------------------------>
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        {{globalsettings.subSector_title}}
+
+                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#rename_sub_sector">
+                            <span><i class="nf nf-md-rename_box"></i></span>
+                        </button>          
+                    </div>
+                    <div class="card-body">
+
+
+                        <form method="post" class="form-inline" id="sub-sector-form">
+                            <div class="input-group">
+                                {% csrf_token %}
+                                {{ sub_sector_form.subSector_name }}
+                                <button class="btn btn-primary form-button" type="submit"><span><i class="nf nf-oct-diff_added"></i></span></button>
+                            </div>
+                        </form>
+
+                        <div class="sector-settings-box">
+                            <form method="post" id="delete-selected-sector-form">
+                                {% csrf_token %}
+                                <ul class="list-group" id="sub-sector-list">
+                                    {% for Sub_Sector in subSectors_list %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="selected_items_sub_sector" value="{{ Sub_Sector.id }}">
+                                            <label class="form-check-label">
+                                                {{ Sub_Sector.subSector_name }}
+                                            </label>
+                                        </div>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <button type="button" id="delete-selected-sub-sector-button" class="btn btn-danger mt-2"> Remover</button>
+                        </form>
+
+                    </div>                    
+                </div>
+                <div class="modal fade" id="rename_sub_sector" tabindex="-1" aria-labelledby="rename_sub_sectorLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="rename_sub_sectorLabel">Renomear Estabelecimento</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form method="post" action="{% url 'rename_sub_sector' %}">
+                                    {% csrf_token %}
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" id="new_sub_sector_name" name="new_sub_sector_name" value="{{ globalsettings.subSector_title }}">
+                                        </div>
+                                    </div>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                        <button type="submit" class="btn btn-primary">Salvar alterações</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                <!-- POSITION ------------------------------------------------------------------------------------------------------------------------>
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        {{globalsettings.position_title}}
+
+                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#rename_position">
+                            <span><i class="nf nf-md-rename_box"></i></span>
+                        </button>          
+                    </div>
+                        <div class="card-body">
+
+                        <form method="post" class="form-inline" id="position-form">
+                            <div class="input-group">
+                                {% csrf_token %}
+                                {{ position_form.position_name }}
+                                <button class="btn btn-primary form-button" type="submit"><span><i class="nf nf-oct-diff_added"></i></span></button>
+                            </div>
+                        </form>
+
+                        <div class="position-settings-box">
+                            <form method="post" id="delete-selected-position-form">
+                                {% csrf_token %}
+                                <ul class="list-group" id="position-list">
+                                    {% for Position in position_list %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="selected_items_position" value="{{ Position.id }}">
+                                            <label class="form-check-label">
+                                                {{ Position.position_name }}
+                                            </label>
+                                        </div> 
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <button type="button" id="delete-selected-position-button" class="btn btn-danger mt-2"> Remover</button>
+                        </form>
+
+                    </div>                    
+                </div>
+                <div class="modal fade" id="rename_position" tabindex="-1" aria-labelledby="rename_positionLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="rename_positionLabel">Renomear Estabelecimento</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form method="post" action="{% url 'rename_position' %}">
+                                    {% csrf_token %}
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" id="new_position_name" name="new_position_name" value="{{ globalsettings.position_title }}">
+                                        </div>
+                                    </div>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                        <button type="submit" class="btn btn-primary">Salvar alterações</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                <!-- SHIFT ------------------------------------------------------------------------------------------------------------------------>
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        {{globalsettings.shift_title}}
+
+                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#rename_shift">
+                            <span><i class="nf nf-md-rename_box"></i></span>
+                        </button>          
+                    </div>
+                    <div class="card-body">
+
+                        <form method="post" class="form-inline" id="shift-form">
+                            <div class="input-group">
+                                {% csrf_token %}
+                                {{ shift_form.shift_name }}
+                                <button class="btn btn-primary form-button" type="submit"><span><i class="nf nf-oct-diff_added"></i></span></button>
+                            </div>
+                        </form>
+
+                        <div class="shift-settings-box">
+                            <form method="post" id="delete-selected-shift-form">
+                                {% csrf_token %}
+                                <ul class="list-group" id="shift-list">
+                                    {% for Shift in shift_list %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="selected_items_shift" value="{{ Shift.id }}">
+                                            <label class="form-check-label">
+                                                {{ Shift.shift_name }}
+                                            </label>
+                                        </div> 
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <button type="button" id="delete-selected-shift-button" class="btn btn-danger mt-2"> Remover</button>
+                        </form>
+
+                    </div>                    
+                </div>
+                <div class="modal fade" id="rename_shift" tabindex="-1" aria-labelledby="rename_shiftLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="rename_shiftLabel">Renomear Estabelecimento</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form method="post" action="{% url 'rename_shift' %}">
+                                    {% csrf_token %}
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" id="new_shift_name" name="new_shift_name" value="{{ globalsettings.shift_title }}">
+                                        </div>
+                                    </div>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                        <button type="submit" class="btn btn-primary">Salvar alterações</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                <!-- STATUS ------------------------------------------------------------------------------------------------------------------------>
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        {{globalsettings.status_title}}
+                        <div class="justify-content-end">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#change_status_color">
+                                <span><i class="nf nf-fae-palette_color"></i></span>
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#rename_status">
+                                <span><i class="nf nf-md-rename_box"></i></span> 
+                            </button>          
+                        </div>
+                    </div>
+                        <div class="card-body">
+
+                        <form method="post" class="form-inline" id="status-form" >
+                            <div class="input-group">
+                                {% csrf_token %}
+                                {{ status_form.status_name }}
+                                <button class="btn btn-primary form-button" type="submit"><span><i class="nf nf-oct-diff_added"></i></span></button>
+                            </div>
+                        </form>
+
+                        <div class="status-settings-box">
+                            <form method="post" id="delete-selected-status-form">
+                                {% csrf_token %}
+                                <ul class="list-group" id="status-list">
+                                    {% for Status in status_list %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="selected_items_status" value="{{ Status.id }}">
+                                            <label class="form-check-label">
+                                                {{ Status.status_name }}
+                                            </label>
+                                        </div>
+                                    </li>
+                                    {% endfor %}
+                                </ul>                            
+                            </div>
+                            <button type="button" id="delete-selected-status-button" class="btn btn-danger mt-2"> Remover</button>
+                        </form>
+
+                    </div>                    
+                </div>
+                <div class="modal fade" id="rename_status" tabindex="-1" aria-labelledby="rename_statusLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="rename_statusLabel">Renomear Estabelecimento</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form method="post" action="{% url 'rename_status' %}">
+                                    {% csrf_token %}
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" id="new_status_name" name="new_status_name" value="{{ globalsettings.status_title }}">
+                                        </div>
+                                    </div>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                        <button type="submit" class="btn btn-primary">Salvar alterações</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="change_status_color" tabindex="-1" aria-labelledby="rename_statusLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="rename_statusLabel">Escolha uma paleta de cores</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form method="post" action="{% url 'change_status_color' %}">
+                                    {% csrf_token %}
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <ul class="list-group" id="status-list-color">
+                                                {% for Status in status_list %}
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    {{ Status.status_name }}
+                                                    <input type="color" id="status_color_{{ forloop.counter }}" name="status_color_{{ Status.pk }}" value="{{ Status.status_color }}">
+                                                </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                    <button type="submit" class="btn btn-primary">Salvar alterações</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    
+
+
+
+
+
+
+<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+
+<script>
+$(document).ready(function() {
+// Quando o botão " Remover" é clicado
+$("#delete-selected-establishment-button").click(function() {
+// Crie um array para armazenar os IDs dos itens selecionados
+var selectedItemsEst = [];
+
+// Encontre todos os checkboxes marcados
+$("input[name='selected_items_establishment']:checked").each(function() {
+selectedItemsEst.push($(this).val());
+});
+
+// Verifique se pelo menos um item foi selecionado
+if (selectedItemsEst.length > 0) {
+// Enviar os IDs dos itens selecionados para a view do Django para deletar os itens
+$.post('{% url "delete_selected_establishments" %}', { 'selected_items_establishment[]': selectedItemsEst, csrfmiddlewaretoken: '{{ csrf_token }}' }, function(data) {
+// Recarregar a página ou atualizar a lista de itens na página, se necessário
+location.reload();
+});
+} else {
+alert("Nenhum item selecionado.");
+}
+});
+});
+</script>
+<script>
+$(document).ready(function() {
+// Quando o botão " Remover" é clicado
+$("#delete-selected-sector-button").click(function() {
+// Crie um array para armazenar os IDs dos itens selecionados
+var selectedItemsSec = [];
+
+// Encontre todos os checkboxes marcados
+$("input[name='selected_items_sector']:checked").each(function() {
+selectedItemsSec.push($(this).val());
+});
+
+// Verifique se pelo menos um item foi selecionado
+if (selectedItemsSec.length > 0) {
+// Enviar os IDs dos itens selecionados para a view do Django para deletar os itens
+$.post('{% url "delete_selected_sectors" %}', { 'selected_items_sector[]': selectedItemsSec, csrfmiddlewaretoken: '{{ csrf_token }}' }, function(data) {
+    // Recarregar a página ou atualizar a lista de itens na página, se necessário
+    location.reload();
+});
+} else {
+alert("Nenhum item selecionado.");
+}
+});
+});
+</script>
+<script>
+$(document).ready(function() {
+// Quando o botão " Remover" é clicado
+$("#delete-selected-sub-sector-button").click(function() {
+// Crie um array para armazenar os IDs dos itens selecionados
+var selectedItemsSec = [];
+
+// Encontre todos os checkboxes marcados
+$("input[name='selected_items_sub_sector']:checked").each(function() {
+    selectedItemsSec.push($(this).val());
+});
+
+// Verifique se pelo menos um item foi selecionado
+if (selectedItemsSec.length > 0) {
+    // Enviar os IDs dos itens selecionados para a view do Django para deletar os itens
+    $.post('{% url "delete_selected_sub_sectors" %}', { 'selected_items_sub_sector[]': selectedItemsSec, csrfmiddlewaretoken: '{{ csrf_token }}' }, function(data) {
+        // Recarregar a página ou atualizar a lista de itens na página, se necessário
+        location.reload();
+    });
+} else {
+    alert("Nenhum item selecionado.");
+}
+});
+});
+</script>
+<script>
+$(document).ready(function() {
+// Quando o botão " Remover" é clicado
+$("#delete-selected-position-button").click(function() {
+    // Crie um array para armazenar os IDs dos itens selecionados
+    var selectedItemsEst = [];
+
+    // Encontre todos os checkboxes marcados
+    $("input[name='selected_items_position']:checked").each(function() {
+        selectedItemsEst.push($(this).val());
+    });
+
+    // Verifique se pelo menos um item foi selecionado
+    if (selectedItemsEst.length > 0) {
+        // Enviar os IDs dos itens selecionados para a view do Django para deletar os itens
+        $.post('{% url "delete_selected_positions" %}', { 'selected_items_position[]': selectedItemsEst, csrfmiddlewaretoken: '{{ csrf_token }}' }, function(data) {
+            // Recarregar a página ou atualizar a lista de itens na página, se necessário
+            location.reload();
+        });
+    } else {
+        alert("Nenhum item selecionado.");
+    }
+});
+});
+</script>
+<script>
+$(document).ready(function() {
+    // Quando o botão " Remover" é clicado
+    $("#delete-selected-shift-button").click(function() {
+        // Crie um array para armazenar os IDs dos itens selecionados
+        var selectedItemsEst = [];
+
+        // Encontre todos os checkboxes marcados
+        $("input[name='selected_items_shift']:checked").each(function() {
+            selectedItemsEst.push($(this).val());
+        });
+
+        // Verifique se pelo menos um item foi selecionado
+        if (selectedItemsEst.length > 0) {
+            // Enviar os IDs dos itens selecionados para a view do Django para deletar os itens
+            $.post('{% url "delete_selected_shifts" %}', { 'selected_items_shift[]': selectedItemsEst, csrfmiddlewaretoken: '{{ csrf_token }}' }, function(data) {
+                // Recarregar a página ou atualizar a lista de itens na página, se necessário
+                location.reload();
+            });
+        } else {
+            alert("Nenhum item selecionado.");
+        }
+    });
+});
+</script>
+<script>
+    $(document).ready(function() {
+        // Quando o botão " Remover" é clicado
+        $("#delete-selected-status-button").click(function() {
+            // Crie um array para armazenar os IDs dos itens selecionados
+            var selectedItemsEst = [];
+
+            // Encontre todos os checkboxes marcados
+            $("input[name='selected_items_status']:checked").each(function() {
+                selectedItemsEst.push($(this).val());
+            });
+
+            // Verifique se pelo menos um item foi selecionado
+            if (selectedItemsEst.length > 0) {
+                // Enviar os IDs dos itens selecionados para a view do Django para deletar os itens
+                $.post('{% url "delete_selected_statuss" %}', { 'selected_items_status[]': selectedItemsEst, csrfmiddlewaretoken: '{{ csrf_token }}' }, function(data) {
+                    // Recarregar a página ou atualizar a lista de itens na página, se necessário
+                    location.reload();
+                });
+            } else {
+                alert("Nenhum item selecionado.");
+            }
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+        // Captura o evento de envio do formulário
+        $('#establishment-form').on('submit', function(event) {
+            event.preventDefault(); // Impede o envio padrão do formulário
+    
+            $.ajax({
+                type: 'POST',
+                url: '{% url 'settings' %}', // Substitua pelo URL correto
+                data: $(this).serialize(), // Serializa o formulário
+                success: function(response) {
+                    // Atualiza apenas o elemento da lista de establishment
+                    $('#establishment-list').replaceWith($(response).find('#establishment-list'));
+                    $('#id_establishment_name').val('');
+                }
+            });
+        });
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        // Captura o evento de envio do formulário
+        $('#sector-form').on('submit', function(event) {
+            event.preventDefault(); // Impede o envio padrão do formulário
+    
+            $.ajax({
+                type: 'POST',
+                url: '{% url 'settings' %}', // Substitua pelo URL correto
+                data: $(this).serialize(), // Serializa o formulário
+                success: function(response) {
+                    // Atualiza apenas o elemento da lista de sector
+                    $('#sector-list').replaceWith($(response).find('#sector-list'));
+                    $('#id_sector_name').val('');
+                }
+            });
+        });
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        // Captura o evento de envio do formulário
+        $('#sub-sector-form').on('submit', function(event) {
+            event.preventDefault(); // Impede o envio padrão do formulário
+    
+            $.ajax({
+                type: 'POST',
+                url: '{% url 'settings' %}', // Substitua pelo URL correto
+                data: $(this).serialize(), // Serializa o formulário
+                success: function(response) {
+                    // Atualiza apenas o elemento da lista de sub-sector
+                    $('#sub-sector-list').replaceWith($(response).find('#sub-sector-list'));
+                    $('#id_subSector_name').val('');
+                }
+            });
+        });
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        // Captura o evento de envio do formulário
+        $('#position-form').on('submit', function(event) {
+            event.preventDefault(); // Impede o envio padrão do formulário
+    
+            $.ajax({
+                type: 'POST',
+                url: '{% url 'settings' %}', // Substitua pelo URL correto
+                data: $(this).serialize(), // Serializa o formulário
+                success: function(response) {
+                    // Atualiza apenas o elemento da lista de position
+                    $('#position-list').replaceWith($(response).find('#position-list'));
+                    $('#id_position_name').val('');
+                }
+            });
+        });
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        // Captura o evento de envio do formulário
+        $('#shift-form').on('submit', function(event) {
+            event.preventDefault(); // Impede o envio padrão do formulário
+    
+            $.ajax({
+                type: 'POST',
+                url: '{% url 'settings' %}', // Substitua pelo URL correto
+                data: $(this).serialize(), // Serializa o formulário
+                success: function(response) {
+                    // Atualiza apenas o elemento da lista de shift
+                    $('#shift-list').replaceWith($(response).find('#shift-list'));
+                    $('#id_shift_name').val('');
+                }
+            });
+        });
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        // Captura o evento de envio do formulário
+        $('#status-form').on('submit', function(event) {
+            event.preventDefault(); // Impede o envio padrão do formulário
+    
+            $.ajax({
+                type: 'POST',
+                url: '{% url 'settings' %}', // Substitua pelo URL correto
+                data: $(this).serialize(), // Serializa o formulário
+                success: function(response) {
+                    // Atualiza apenas o elemento da lista de status
+                    $('#status-list').replaceWith($(response).find('#status-list'));
+                    $('#status-list-color').replaceWith($(response).find('#status-list-color'));
+                    $('#id_status_name').val('');
+                }
+            });
+        });
+    });
+</script>    
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const colorInputs = document.querySelectorAll('input[type="color"]');
+        
+        colorInputs.forEach(input => {
+            input.addEventListener('change', function() {
+                const selectedColor = this.value;
+                this.style.backgroundColor = selectedColor;
+            });
+        });
+    });
+    </script>
+
+<script>
+    // Estabelecer uma conexão WebSocket com o consumidor
+    const socket = io('/your-websocket-url/');
+
+    // Lidar com atualizações de progresso recebidas do servidor
+    socket.on('update_progress', function (data) {
+        const progress = data.progress;
+        // Atualize a barra de progresso no seu HTML com o valor de 'progress'
+        $('#progress-bar').css('width', progress + '%');
+    });
+</script>
+
+    
+{% endblock %}
+
+
+
+
+

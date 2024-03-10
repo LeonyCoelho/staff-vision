@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+{% load static %}
+{% csrf_token %}
+
+<title>Staff Vision - Editar Layout</title>
+<!-- CONSTRUA O TEMPLATE AQUI -->
+
+<div class="container">
+    <div class="row" id="sortable">
+        <div class="col-{{header_width}} out-card mb-3" id="header-preset">
+            <div  class="card mb-3custom-card-dashboard h-100">
+                <div class="card-header">EDITAR LAYOUT </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <h4 class="card-title">
+                                {{preset.preset_name}} - {{preset.id}} - Tamanho - {{header_width}}
+                            </h4>
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" id="width-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                  Tamanho
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="width-dropdown">
+                                  <a class="dropdown-item dropdown-item-head" data-width="3">Pequeno</a>
+                                  <a class="dropdown-item dropdown-item-head" data-width="4">Médio</a>
+                                  <a class="dropdown-item dropdown-item-head" data-width="6">Médio-Grande</a>
+                                  <a class="dropdown-item dropdown-item-head" data-width="9">Grande</a>
+                                  <a class="dropdown-item dropdown-item-head" data-width="12">Enorme</a>                  
+                                </ul>
+                              </div>
+                        </div>
+                        <div class="col-6 text-end">
+                            <a class="btn btn-danger text-end" href="{% url 'reset_update_positions' preset.id %}">
+                                Reset
+                            </a>      
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        
+            {% for value in values_to_print %}
+                <div class="col-{{ value.Width }} draggable-card out-card mb-3" data-id="{{ value.ID }}">
+                    <div class="card mb-3custom-card-layout h-100">
+                        <div class="card-header">
+                            {{ value.Sector }} - {{ value.Order }}
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-8">
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button" id="width-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                          Tamanho
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="width-dropdown">
+                                          <a class="dropdown-item dropdown-item-sector" data-width="3">Pequeno</a>
+                                          <a class="dropdown-item dropdown-item-sector" data-width="4">Médio</a>
+                                          <a class="dropdown-item dropdown-item-sector" data-width="6">Médio-Grande</a>
+                                          <a class="dropdown-item dropdown-item-sector" data-width="9">Grande</a>
+                                          <a class="dropdown-item dropdown-item-sector" data-width="12">Enorme</a>                  
+                                        </ul>
+                                      </div>
+                                </div>
+                                <div class="col-4 text-end text-muted">
+                                    <h3 class="">
+                                      <i class="nf nf-cod-move"></i>
+                                    </h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+
+
+</div>
+
+
+    <script>
+        var updatePositionsUrl = "{% url 'update_positions' preset.id %}";
+        var updateSectorWidthUrl = "/dashboard_settings/update_sector_width";
+        var updateHeaderWidthUrl = "/dashboard_settings/update_header_width";
+        var preset_id = {{ preset.id }}
+    </script>
+    <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+    <script src="{% static 'js/jquery-ui.js' %}"></script>
+    <script src="{% static 'js/js.cookie.min.js' %}"></script>
+    <script src="{% static 'js/edit_layout.js' %}"></script>
+
+    
+    
+    
+    
+    
+
+
+
+
+{% endblock %}

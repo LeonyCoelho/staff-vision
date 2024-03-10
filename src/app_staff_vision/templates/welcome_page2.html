@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+
+<title>Staff Vision - BEM VINDO</title>
+<!-- CONSTRUA O TEMPLATE AQUI -->
+<div class="container">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            Informações Basicas
+        </div>
+        <div class="card-body">
+            <form class="form-group" method="post" action="{% url 'change_settings2' %}">
+                {% csrf_token %}
+                <label>Nome da Empresa / Instituição</label>
+                <input type="text" class="form-control mb-3" name="institution" value="{{globalsettings.institution_name}}" required>
+                <button class="btn btn-primary" type="submit">Avançar</button>
+                <a class="btn btn-secondary" href="{% url 'welcome3' %}">Pular</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
